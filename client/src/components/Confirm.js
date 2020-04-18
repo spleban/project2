@@ -20,26 +20,26 @@ export class FormUserDetails extends Component {
         return (
             <MuiThemeProvider>
                 <React.Fragment>
-                    <AppBar title="Confirm User Data" />
+                    <AppBar title="Please Confirm Your Information" />
                     <List>
                         <ListItem
                             primaryText="First Name"
-                            secondaryText={ firstName } />
+                            secondaryText={firstName} />
                         <ListItem
                             primaryText="Last Name"
-                            secondaryText={ lastName } />
+                            secondaryText={lastName} />
                         <ListItem
                             primaryText="Email"
-                            secondaryText={ email } />
+                            secondaryText={email} />
                         <ListItem
                             primaryText="Occupation"
-                            secondaryText={ occupation } />
+                            secondaryText={occupation} />
                         <ListItem
                             primaryText="City"
-                            secondaryText={ city } />
+                            secondaryText={city} />
                         <ListItem
                             primaryText="Bio"
-                            secondaryText={ bio } />
+                            secondaryText={bio} />
                     </List>
 
                     <br />

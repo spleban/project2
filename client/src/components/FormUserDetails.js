@@ -15,7 +15,7 @@ export class FormUserDetails extends Component {
         return (
             <MuiThemeProvider>
                 <React.Fragment>
-                    <AppBar title="Welcome To Awesome Appointments" />
+                    <AppBar title="Welcome To Awesome Scheduling" />
                     <Textfield
                         hintText="Enter Your First Name"
                         floatingLabelText="First name"
@@ -35,12 +35,12 @@ export class FormUserDetails extends Component {
                         defaultValue={values.email} />
                     <br />
                     <RaisedButton
-                        label="Provider"
+                        label="Provider Login"
                         primary={true}
                         style={styles.button}
                         onClick={this.continue} />
                     <RaisedButton
-                        label="Customer"
+                        label="Customer Login"
                         primary={true}
                         style={styles.button}
                         onClick={this.continue} />
