@@ -5,6 +5,14 @@ const controller = require('../../controllers/controller');
 
 
 router.route('/getcustomersessions')
-  .post(controller.getCustomerSessions)
+  .post(controller.getCustomerSessions);
+router.route('/getprovidersessions')
+  .post(controller.getProviderSessions);
+router.route('/savecustomer')
+  .post(controller.saveCustomer);
+router.route('/saveprovider')
+  .post(controller.saveProvider);
+router.route('/saveservice')
+  .post(controller.saveService);
 
 module.exports = router;
