@@ -1,33 +1,35 @@
-const connection = require('../config/connection');
+const db = require('../config/connection');
 const queries = require('../models/Schedule/scheduleQueries');
 
 module.exports = {
   // saveProvider: (req, res) => {
   //     // How to handle new service since need to save it and service ID
   //     const { name,email,service,daily_slots} = req.body
-  //     connection.query(queries.getServiceByName, service, (err, serviceId) => {
+  //     db.query(queries.getServiceByName, service, (err, serviceId) => {
   //         if (err) {
   //           throw err
   //         }
   //         if (serviceId===null){
-  //     connection.query(queries.insertProvider,[name,email,service_id,daily_slots], (err, dbRes) => {
+  //     db.query(queries.insertProvider,[name,email,service_id,daily_slots], (err, dbRes) => {
   //       if (err) {
   //         throw err
   //       }
-  //       connection.query(queries.getServiceByName,name, (err, serviceId) => {
+  //       db.query(queries.getServiceByName,name, (err, serviceId) => {
   //         if (err) {
   //           throw err
   //         }
   //         return res.json(serviceId)
   //     })
   //   },
+
+
   saveCustomer: (req, res) => {
     const { name, email } = req.body;
-    connection.query(queries.insertCustomer, [name, email], (err, dbRes) => {
+    db.query(queries.insertCustomer, [name, email], (err, dbRes) => {
       if (err) {
         throw err;
       }
-      connection.query(queries.getCustomerByName, name, (err, customerId) => {
+      db.query(queries.getCustomerByName, name, (err, customerId) => {
         if (err) {
           throw err;
         }
@@ -37,11 +39,11 @@ module.exports = {
   },
   saveService: (req, res) => {
     const { name } = req.body;
-    connection.query(queries.insertService, name, (err, dbRes) => {
+    db.query(queries.insertService, name, (err, dbRes) => {
       if (err) {
         throw err;
       }
-      connection.query(queries.getServiceByName, name, (err, serviceId) => {
+      db.query(queries.getServiceByName, name, (err, serviceId) => {
         if (err) {
           throw err;
         }
@@ -54,24 +56,24 @@ module.exports = {
   //     // 1. Need to return sessions and type (customer or provider)
   //     // 2. Need to return if not found.
   //     { email } = req.body
-  //     connection.query(queries.getCustomerByEmail, (err, customerId) => {
+  //     db.query(queries.getCustomerByEmail, (err, customerId) => {
   //     if (err) {
   //       throw err
   //     }
   //     if (customerId){
-  //         connection.query(queries.getCustomerSessions, (err, customerSessions) => {
+  //         db.query(queries.getCustomerSessions, (err, customerSessions) => {
   //             if (err) {
   //               throw err
   //             }
   //             return res.json(customerSessions)
   //         }
   //     } else {
-  //         connection.query(queries.getProviderByEmail, (err, providerId) => {
+  //         db.query(queries.getProviderByEmail, (err, providerId) => {
   //             if (err) {
   //               throw err
   //             }
   //             if (providerId){
-  //                 connection.query(queries.getProviderSessions, (err, ProviderSessions) => {
+  //                 db.query(queries.getProviderSessions, (err, ProviderSessions) => {
   //                     if (err) {
   //                       throw err
   //                     }
@@ -85,20 +87,32 @@ module.exports = {
   //   })
   // },
   getCustomerSessions: async (req, res) => {
+    console.log('in getCustomerSessions');
     try {
       console.log(req.body);
       const { customerId } = req.body;
       console.log(customerId);
-      const sessions = await connection.query(queries.getCustomerSessions, [customerId]);
+      const sessions = await db.query(queries.getCustomerSessions, [customerId]);
       console.log(sessions);
       res.json(sessions);
     } catch (err) {
       res.json({ error: err });
     }
   },
+
+  // getCustomerSessions: (req, res) => {
+  //   const { CustomerId } = req.body;
+  //   db.query(queries.getCustomerSessions, [CustomerId], (err, sessions) => {
+  //     if (err) {
+  //       throw err;
+  //     }
+  //     return res.json(sessions);
+  //   });
+  // },
+
   getProviderSessions: (req, res) => {
     const { ProviderId } = req.body;
-    connection.query(queries.getProviderSessions, [ProviderId], (err, sessions) => {
+    db.query(queries.getProviderSessions, [ProviderId], (err, sessions) => {
       if (err) {
         throw err;
       }
@@ -107,7 +121,7 @@ module.exports = {
   },
   deleteSession: (req, res) => {
     const { sessionId } = req.params;
-    connection.query(queries.deleteSessionById, parseInt(sessionId), (err, dbRes) => {
+    db.query(queries.deleteSessionById, parseInt(sessionId), (err, dbRes) => {
       if (err) {
         throw err;
       }
@@ -115,7 +129,7 @@ module.exports = {
     });
   },
   getServices: (req, res) => {
-    connection.query(queries.getServices, (err, services) => {
+    db.query(queries.getServices, (err, services) => {
       if (err) {
         return res.json(err);
       }
@@ -124,7 +138,7 @@ module.exports = {
   },
   getProviders: (req, res) => {
     const { serviceId } = req.body;
-    connection.query(queries.getProvidersByService, serviceId, (err, providers) => {
+    db.query(queries.getProvidersByService, serviceId, (err, providers) => {
       if (err) {
         throw new Error(err);
       }
@@ -133,7 +147,7 @@ module.exports = {
   },
   getDates: (req, res) => {
     const { providerId } = req.body;
-    connection.query(queries.getDates, providerId, (err, dates) => {
+    db.query(queries.getDates, providerId, (err, dates) => {
       if (err) {
         throw err;
       }
@@ -142,7 +156,7 @@ module.exports = {
   },
   getSlots: (req, res) => {
     const { providerID, date } = req.body;
-    connection.query(queries.getSlots, (err, slots) => {
+    db.query(queries.getSlots, (err, slots) => {
       if (err) {
         throw err;
       }
