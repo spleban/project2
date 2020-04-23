@@ -13,7 +13,7 @@ if (process.env.JAWSDB_URL) {
     user: 'root',
     password: process.env.SQL_PASS,
     database: 'schedule_db',
-  }
+  };
 }
 
 function makeDb(config) {
@@ -25,7 +25,7 @@ function makeDb(config) {
     },
     close() {
       return util.promisify(connection.end).call(connection);
-    }
+    },
   };
 }
 

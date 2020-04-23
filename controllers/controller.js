@@ -23,20 +23,29 @@ module.exports = {
   //   },
 
 
-  saveCustomer: (req, res) => {
-    const { name, email } = req.body;
-    db.query(queries.insertCustomer, [name, email], (err, dbRes) => {
-      if (err) {
-        throw err;
-      }
-      db.query(queries.getCustomerByName, name, (err, customerId) => {
-        if (err) {
-          throw err;
-        }
-        return res.json(customerId);
-      });
-    });
+  saveCustomer: async (req, res) => {
+    try {
+      const { name, email } = req.body;
+      await db.query(queries.insertCustomer, [name, email]);
+      const customerId = await db.query(queries.getCustomerByEmail, email);
+      res.json(customerId);
+    } catch (err) {
+      res.json({ error: 'err' });
+    }
   },
+
+  saveProvider: async (req, res) => {
+    try {
+      const { name, email, service, daily_slots } = req.body;
+      
+      await db.query(queries.insertService, [name, emai, service, daily_slots]);
+      const providerId = await db.query(queries.getCustomerByEmail, email);
+      res.json(providerId);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+
   saveService: (req, res) => {
     const { name } = req.body;
     db.query(queries.insertService, name, (err, dbRes) => {
@@ -51,116 +60,109 @@ module.exports = {
       });
     });
   },
-  // login: (req, res) => {
-  //     // Issues
-  //     // 1. Need to return sessions and type (customer or provider)
-  //     // 2. Need to return if not found.
-  //     { email } = req.body
-  //     db.query(queries.getCustomerByEmail, (err, customerId) => {
-  //     if (err) {
-  //       throw err
-  //     }
-  //     if (customerId){
-  //         db.query(queries.getCustomerSessions, (err, customerSessions) => {
-  //             if (err) {
-  //               throw err
-  //             }
-  //             return res.json(customerSessions)
-  //         }
-  //     } else {
-  //         db.query(queries.getProviderByEmail, (err, providerId) => {
-  //             if (err) {
-  //               throw err
-  //             }
-  //             if (providerId){
-  //                 db.query(queries.getProviderSessions, (err, ProviderSessions) => {
-  //                     if (err) {
-  //                       throw err
-  //                     }
-  //                     return res.json(providerSessions)
-  //                 }
-  //             } else {
-  //                 return res.json()
-  //             }
-  //     }
 
-  //   })
-  // },
-  getCustomerSessions: async (req, res) => {
-    console.log('in getCustomerSessions');
+  providersLogin: async (req, res) => {
+    try {
+      const { providerId } = req.body;
+      const providerSessions = await db.query(queries.getProviderSessions, parseInt(providerId));
+      res.json(providerSessions);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+
+  customerLogin: async (req, res) => {
+    try {
+      const { customerId } = req.body;
+      const providerSessions = await db.query(queries.getCustomerSessions, parseInt(customerId));
+      res.json(providerSessions);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+
+  getServiceId: async (req, res) => {
     try {
       console.log(req.body);
+      
+      const { name } = req.body;
+      console.log(name);
+      const serviceId = await db.query(queries.getServiceByName, name);
+      res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
+
+  getCustomerSessions: async (req, res) => {
+    try {
       const { customerId } = req.body;
-      console.log(customerId);
       const sessions = await db.query(queries.getCustomerSessions, [customerId]);
-      console.log(sessions);
       res.json(sessions);
     } catch (err) {
       res.json({ error: err });
     }
   },
 
-  // getCustomerSessions: (req, res) => {
-  //   const { CustomerId } = req.body;
-  //   db.query(queries.getCustomerSessions, [CustomerId], (err, sessions) => {
-  //     if (err) {
-  //       throw err;
-  //     }
-  //     return res.json(sessions);
-  //   });
-  // },
+  getProviderSessions: async (req, res) => {
+    console.log(req.body);
+    try {
+      const { providerId } = req.body;
+      const sessions = await db.query(queries.getProviderSessions, [providerId]);
+      res.json(sessions);
+    } catch (err) {
+      res.json({ error: err });
+    }
+  },
 
-  getProviderSessions: (req, res) => {
-    const { ProviderId } = req.body;
-    db.query(queries.getProviderSessions, [ProviderId], (err, sessions) => {
-      if (err) {
-        throw err;
-      }
-      return res.json(sessions);
-    });
+  deleteSession: async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      const sessions = await db.query(queries.deleteSessionById, parseInt(sessionId));
+      res.json({ success: true });
+    } catch (err) {
+      res.json({ error: err });
+    }
   },
-  deleteSession: (req, res) => {
-    const { sessionId } = req.params;
-    db.query(queries.deleteSessionById, parseInt(sessionId), (err, dbRes) => {
-      if (err) {
-        throw err;
-      }
-      return res.json({ success: true });
-    });
+
+  getServices: async (req, res) => {
+    try {
+      const services = await db.query(queries.getServices);
+      res.json(services);
+    } catch (err) {
+      res.json({ error: err });
+    }
   },
-  getServices: (req, res) => {
-    db.query(queries.getServices, (err, services) => {
-      if (err) {
-        return res.json(err);
-      }
-      return res.json(services);
-    });
-  },
-  getProviders: (req, res) => {
-    const { serviceId } = req.body;
-    db.query(queries.getProvidersByService, serviceId, (err, providers) => {
-      if (err) {
-        throw new Error(err);
-      }
+
+  getProviders: async (req, res) => {
+    try {
+      const { serviceId } = req.body;
+      const providers = await db.query(queries.getProviders, parseInt(providerId));
       res.json(providers);
-    });
+    } catch (err) {
+      res.json({ error: err });
+    }
   },
-  getDates: (req, res) => {
-    const { providerId } = req.body;
-    db.query(queries.getDates, providerId, (err, dates) => {
-      if (err) {
-        throw err;
-      }
-      return res.json(dates);
-    });
+
+  getDates: async (req, res) => {
+    try {
+      const { providerId } = req.body;
+      const dates = await db.query(queries.deleteSessionById, parseInt(providerId));
+      res.json(dates);
+    } catch (err) {
+      res.json({ error: err });
+    }
   },
-  getSlots: (req, res) => {
-    const { providerID, date } = req.body;
-    db.query(queries.getSlots, (err, slots) => {
-      if (err) {
-        throw err;
-      }
-      return res.json(slots);
-    });
+
+
+  getSlots: async (req, res) => {
+    try {
+      const { providerId, date } = req.body;
+      const dates = await db.query(queries.deleteSessionById, [parseInt(providerId), date]);
+      res.json(dates);
+    } catch (err) {
+      res.json({ error: err });
+    }
   },
+
 };

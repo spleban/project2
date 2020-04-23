@@ -6,5 +6,9 @@ const controller = require('../../controllers/controller');
 
 router.route('/getcustomersessions')
   .post(controller.getCustomerSessions)
+  router.route('/getprovidersessions')
+  .post(controller.getProviderSessions);
+router.route('/savecustomer')
+  .post(controller.saveCustomer);
 
 module.exports = router;
