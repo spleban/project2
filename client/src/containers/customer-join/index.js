@@ -6,7 +6,7 @@ import './style.css';
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 
 export default class CustomerJoin extends Component {
@@ -43,10 +43,11 @@ export default class CustomerJoin extends Component {
 
   onSubmit(e) {
     e.preventDefault();
+    console.log("Submit");
     if (this.validateForm()) {
       console.log('Form data:')
       console.log(this.state.fields)
-      Axios.post("/api/savecustomer", this.state.fields)
+      axios.post("/api/savecustomer", this.state.fields)
         .then(res => {
           console.log(res)
           this.props.history.push('/customer_dashboard');

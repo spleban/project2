@@ -11,7 +11,7 @@ if (process.env.JAWSDB_URL) {
     host: 'localhost',
     port: 3306,
     user: 'root',
-    password: process.env.SQL_PASS,
+    password: process.env.SQL_PASS || 'password',
     database: 'schedule_db',
   };
 }
