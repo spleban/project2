@@ -2,6 +2,13 @@
 const db = require('../config/connection');
 const queries = require('../models/Schedule/scheduleQueries');
 
+
+const findCustomerSessions = async (customerId) => {
+  const customerSessions = await db.query(queries.getCustomerSessions,
+    parseInt(customerId, 10));
+  return (customerSessions); 
+}
+
 const findServiceId = async (name) => {
   const serviceIds = await db.query(queries.getServiceByName, name);
   let serviceId = 0;
@@ -43,6 +50,25 @@ const findCustomerId = async (email) => {
 
 module.exports = {
 
+  saveCustomer: async (req, res) => {
+    try {
+      let sessions;
+      const { name, email } = req.body;
+      let customerId = await findCustomerId(email);
+      if (customerId === 0) {
+        await db.query(queries.insertCustomer, [name, email]);
+        customerId = await findCustomerId(email);
+        sessions = await findCustomerSessions(customerId);
+      } else {
+        throw new Error(`email: ${email} is already included, choose a different email.`);
+      }
+      res.json(sessions);
+    } catch (err) {
+      res.json({error: err.message});
+    }
+  },
+
+
   saveProvider: async (req, res) => {
     try {
       const { name, email, service, dailySlots, } = req.body;
@@ -56,22 +82,6 @@ module.exports = {
         providerId = 0;
       }
       res.json(providerId);
-    } catch (err) {
-      res.json({ error: 'err' });
-    }
-  },
-
-  saveCustomer: async (req, res) => {
-    try {
-      const { name, email } = req.body;
-      let customerId = await findCustomerId(email);
-      if (customerId === 0) {
-        await db.query(queries.insertCustomer, [name, email]);
-        customerId = await findCustomerId(email);
-      } else {
-        customerId = 0;
-      }
-      res.json(customerId);
     } catch (err) {
       res.json({ error: 'err' });
     }
