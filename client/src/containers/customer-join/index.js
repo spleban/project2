@@ -92,6 +92,7 @@ export default class CustomerJoin extends Component {
                     <div className="left-blk">
                         <div className="page-head">
                           <h3>Customer Join</h3>
+                          <p>Please provide your Full Name, and Email. Thanks.</p>
                         </div>
                         <div className="form-blk">
                           <form onSubmit={this.onSubmit}>

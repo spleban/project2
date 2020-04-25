@@ -104,7 +104,7 @@ export default class ProviderJoin extends Component {
                     <div className="left-blk">
                         <div className="page-head">
                           <h3>Provider Join</h3>
-                          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                          <p>Please provide your Full Name, Email, Services that you provide, And how many Services a day. Thanks.</p>
                         </div>
                         <div className="form-blk">
                           <form onSubmit={this.onSubmit}>

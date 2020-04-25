@@ -92,7 +92,7 @@ export default class Login extends Component {
                     <div className="left-blk">
                         <div className="page-head">
                           <h3>Login to Awesome Scheduling</h3>
-                          {/* <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p> */}
+                          <p>Please enter your Full Name and Email. Thanks.</p>
                         </div>
                         <div className="form-blk">
                           <form>

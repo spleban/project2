@@ -138,10 +138,10 @@ export default class CustomerDashboard extends Component {
 
     const data = [
       { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-      { id: 2, provider: 'Spiderman', service: 'sarcasim ', date: ' ', time: ' ' },
+      { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
       { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
       { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-      { id: 5, provider: ' ', service: ' ', date: ' ', time: ' ' },
+      { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
     ];
     const columns = [
       {
