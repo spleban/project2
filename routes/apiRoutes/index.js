@@ -1,13 +1,18 @@
 const router = require('express').Router();
 
-
-const todoRoutes = require('./todoRoutes');
-// /api  prepended to every route declared in here
-// todos
+const controller = require('../../controllers/controller');
+// /api/schedule prepended to every route
 
 
-// declares a route for /api/todos
-router.use("/todos", todoRoutes);
-
+router.route('/getcustomersessions')
+  .post(controller.getCustomerSessions);
+router.route('/getprovidersessions')
+  .post(controller.getProviderSessions);
+router.route('/savecustomer')
+  .post(controller.saveCustomer);
+router.route('/saveprovider')
+  .post(controller.saveProvider);
+router.route('/saveservice')
+  .post(controller.saveService);
 
 module.exports = router;
