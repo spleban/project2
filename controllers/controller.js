@@ -6,8 +6,8 @@ const queries = require('../models/Schedule/scheduleQueries');
 const findCustomerSessions = async (customerId) => {
   const customerSessions = await db.query(queries.getCustomerSessions,
     parseInt(customerId, 10));
-  return (customerSessions); 
-}
+  return (customerSessions);
+};
 
 const findServiceId = async (name) => {
   const serviceIds = await db.query(queries.getServiceByName, name);
@@ -24,7 +24,7 @@ const findOrCreateServiceId = async (name) => {
     await db.query(queries.insertService, [name]);
     serviceIds = await db.query(queries.getServiceByName, name);
   }
-  return serviceIds[0];
+  return serviceIds[0].id;
 };
 
 const findProviderId = async (email) => {
@@ -52,38 +52,38 @@ module.exports = {
 
   saveCustomer: async (req, res) => {
     try {
-      let sessions;
       const { name, email } = req.body;
       let customerId = await findCustomerId(email);
       if (customerId === 0) {
         await db.query(queries.insertCustomer, [name, email]);
         customerId = await findCustomerId(email);
-        sessions = await findCustomerSessions(customerId);
       } else {
-        throw new Error(`email: ${email} is already included, choose a different email.`);
+        throw new Error(`email: ${email} is already used by a customer, choose a different email.`);
       }
-      res.json(sessions);
+      res.json([]);
     } catch (err) {
-      res.json({error: err.message});
+      res.json({ error: err.message });
     }
   },
 
 
   saveProvider: async (req, res) => {
     try {
-      const { name, email, service, dailySlots, } = req.body;
+      const {
+        name, email, service, slots,
+      } = req.body;
       let providerId = await findProviderId(email);
       if (providerId === 0) {
         const serviceId = await findOrCreateServiceId(service);
         await db.query(queries.insertProvider,
-          [name, email, serviceId, parseInt(dailySlots, 10)]);
+          [name, email, serviceId, parseInt(slots, 10)]); //
         providerId = await findProviderId(email);
       } else {
-        providerId = 0;
+        throw new Error(`email: ${email} is already used by a provider, choose a different email.`);
       }
-      res.json(providerId);
+      res.json([]);
     } catch (err) {
-      res.json({ error: 'err' });
+      res.json({ error: err.message });
     }
   },
 
@@ -93,7 +93,7 @@ module.exports = {
       const serviceId = await findOrCreateServiceId(name);
       res.json(serviceId);
     } catch (err) {
-      res.json({ error: 'err' });
+      res.json({ error: err.message });
     }
   },
 
@@ -104,7 +104,7 @@ module.exports = {
         parseInt(providerId, 10));
       res.json(providerSessions);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -115,7 +115,7 @@ module.exports = {
         parseInt(customerId, 10));
       res.json(providerSessions);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -125,17 +125,17 @@ module.exports = {
       const serviceId = await findServiceId(name);
       res.json(serviceId);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
   getCustomerSessions: async (req, res) => {
     try {
       const { customerId } = req.body;
-      const sessions = await db.query(queries.getCustomerSessions, [customerId]);
+      const sessions = await findCustomerSessions(customerId);
       res.json(sessions);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -145,7 +145,7 @@ module.exports = {
       const sessions = await db.query(queries.getProviderSessions, [providerId]);
       res.json(sessions);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -155,7 +155,7 @@ module.exports = {
       await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
       res.json({ success: true });
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -164,7 +164,7 @@ module.exports = {
       const services = await db.query(queries.getServices);
       res.json(services);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -174,7 +174,7 @@ module.exports = {
       const providers = await db.query(queries.getProviders, parseInt(serviceId, 10));
       res.json(providers);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -184,7 +184,7 @@ module.exports = {
       const dates = await db.query(queries.deleteSessionById, parseInt(providerId, 10));
       res.json(dates);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -194,7 +194,7 @@ module.exports = {
       const dates = await db.query(queries.deleteSessionById, [parseInt(providerId, 10), date]);
       res.json(dates);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
