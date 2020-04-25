@@ -5,6 +5,7 @@ const insertSession = 'INSERT INTO session (customer_id,provider_id,service_id,d
 const getProviderByEmail = 'SELECT id FROM provider WHERE email=?';
 const getProviderByNameAndEmail = 'SELECT id FROM provider WHERE name=? AND email=?';
 const getCustomerByEmail = 'SELECT id FROM customer WHERE email=?';
+const getCustomerDataByEmail = 'SELECT * FROM customer WHERE email=?';
 const getCustomerByNameAndEmail = 'SELECT id FROM customer WHERE name=? AND email=?';
 const getServiceByName = 'SELECT id FROM service WHERE name=?';
 const getCustomerSessions = 'SELECT * FROM session WHERE customer_id=?';
@@ -23,6 +24,7 @@ module.exports = {
   getProviderByEmail,
   getProviderByNameAndEmail,
   getCustomerByEmail,
+  getCustomerDataByEmail,
   getCustomerByNameAndEmail,
   getServiceByName,
   getProviderSessions,
