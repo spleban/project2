@@ -3,9 +3,9 @@ const insertCustomer = 'INSERT INTO customer (name,email,password) VALUES (?,?,"
 const insertService = 'INSERT INTO service (name) VALUES (?)';
 const insertSession = 'INSERT INTO session (customer_id,provider_id,service_id,date,slot) VALUES (?,?,?,?,?)';
 const getProviderByEmail = 'SELECT id FROM provider WHERE email=?';
+const getProviderByNameAndEmail = 'SELECT id FROM provider WHERE name=? AND email=?';
 const getCustomerByEmail = 'SELECT id FROM customer WHERE email=?';
-const getCustomerByName = 'SELECT id FROM customer WHERE name=?';
-const getProviderByName = 'SELECT id FROM provider WHERE name=?';
+const getCustomerByNameAndEmail = 'SELECT id FROM customer WHERE name=? AND email=?';
 const getServiceByName = 'SELECT id FROM service WHERE name=?';
 const getCustomerSessions = 'SELECT * FROM session WHERE customer_id=?';
 const getProviderSessions = 'SELECT * FROM session WHERE provider_id=?';
@@ -21,9 +21,9 @@ module.exports = {
   insertService,
   insertSession,
   getProviderByEmail,
+  getProviderByNameAndEmail,
   getCustomerByEmail,
-  getProviderByName,
-  getCustomerByName,
+  getCustomerByNameAndEmail,
   getServiceByName,
   getProviderSessions,
   getCustomerSessions,
