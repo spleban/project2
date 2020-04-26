@@ -37,16 +37,14 @@ const findProviderByEmail = async (email) => {
   return providerId;
 };
 
-const findProviderByNameAndEmail = async (name, email) => {
-  const providerIds = await db.query(queries.getProviderByNameAndEmail, [name, email]);
-  let providerId = 0;
-  if (providerIds.length === 0) {
-    throw new Error('No matching provider found');
-  } else {
-    providerId = providerIds[0].id;
-  }
-  return providerId;
-};
+// const findProviderIdByNameAndEmail = async (name, email) => {
+//   const providerIds = await db.query(queries.getProviderByNameAndEmail, [name, email]);
+//   let providerId = 0;
+//   if (providerIds.length.length > 0) {
+//     providerId = providerIds[0].id;
+//   }
+//   return providerId;
+// };
 
 
 const findCustomerId = async (email) => {
@@ -66,7 +64,7 @@ module.exports = {
     try {
       const { name, email } = req.body;
       let customer;
-      let customerId = await findCustomerId(email);
+      const customerId = await findCustomerId(email);
       if (customerId === 0) {
         await db.query(queries.insertCustomer, [name, email]);
         customer = await db.query(queries.getCustomerDataByEmail, [email]);
@@ -79,22 +77,22 @@ module.exports = {
     }
   },
 
-
   saveProvider: async (req, res) => {
     try {
       const {
         name, email, service, slots,
       } = req.body;
-      let providerId = await findProviderByEmail(email);
+      let provider;
+      const providerId = await findProviderByEmail(email);
       if (providerId === 0) {
         const serviceId = await findOrCreateServiceId(service);
         await db.query(queries.insertProvider,
           [name, email, serviceId, parseInt(slots, 10)]); //
-        providerId = await findProviderByEmail(email);
+        provider = await db.query(queries.getProviderDataByEmail, [email]);
       } else {
         throw new Error(`email: ${email} is already used by a provider, choose a different email.`);
       }
-      res.json([]);
+      res.json(provider);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -103,21 +101,11 @@ module.exports = {
   providerLogin: async (req, res) => {
     try {
       const { name, email } = req.body;
-      const providerId = await findProviderByNameAndEmail(name, email);
-      const providerSessions = await db.query(queries.getProviderSessions,
-        parseInt(providerId, 10));
-      res.json(providerSessions);
-    } catch (err) {
-      res.json({ error: err.message });
-    }
-  },
-
-
-  saveService: async (req, res) => {
-    try {
-      const { name } = req.body;
-      const serviceId = await findOrCreateServiceId(name);
-      res.json(serviceId);
+      const provider = await db.query(queries.getProviderByNameAndEmail, [name, email]);
+      if (provider.length === 0) {
+        throw new Error('Provider login failed!');
+      }
+      res.json(provider);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -125,20 +113,12 @@ module.exports = {
 
   customerLogin: async (req, res) => {
     try {
-      const { customerId } = req.body;
-      const providerSessions = await db.query(queries.getCustomerSessions,
-        parseInt(customerId, 10));
-      res.json(providerSessions);
-    } catch (err) {
-      res.json({ error: err.message });
-    }
-  },
-
-  getServiceId: async (req, res) => {
-    try {
-      const { name } = req.body;
-      const serviceId = await findServiceId(name);
-      res.json(serviceId);
+      const { name, email } = req.body;
+      const customer = await db.query(queries.getCustomerByNameAndEmail, [name, email]);
+      if (customer.length === 0) {
+        throw new Error('Customer login failed!');
+      }
+      res.json(customer);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -164,6 +144,28 @@ module.exports = {
     }
   },
 
+
+  saveService: async (req, res) => {
+    try {
+      const { name } = req.body;
+      const serviceId = await findOrCreateServiceId(name);
+      res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+  getServiceId: async (req, res) => {
+    try {
+      const { name } = req.body;
+      const serviceId = await findServiceId(name);
+      res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+  
   deleteSession: async (req, res) => {
     try {
       const { sessionId } = req.body;
