@@ -10,8 +10,8 @@ const getCustomerDataByEmail = 'SELECT * FROM customer WHERE email=?';
 const getCustomerByNameAndEmail = 'SELECT * FROM customer WHERE name=? AND email=?';
 const getServiceByName = 'SELECT id FROM service WHERE name=?';
 const deleteSession = 'DELETE FROM session WHERE id=?';
-const getServices = 'SELECT name FROM service';
-const getProvidersByService = 'SELECT name FROM provider WHERE service_id=?';
+const getServices = 'SELECT id, name FROM service';
+const getServiceProviders = 'SELECT id, name FROM provider WHERE service_id=?';
 const getDates = 'SELECT date FROM session WHERE provider_id=? AND (date BETWEEN ? AND ?)';
 const getSlots = 'SELECT slot FROM session WHERE date=?';
 const SessionTabelByName = 'SELECT session.id, customer.name AS customer, provider.name AS provider,'
@@ -38,7 +38,7 @@ module.exports = {
   getCustomerSessions,
   deleteSession,
   getServices,
-  getProvidersByService,
+  getServiceProviders,
   getDates,
   getSlots,
 };

@@ -46,6 +46,20 @@ const findProviderByEmail = async (email) => {
 //   return providerId;
 // };
 
+function addDays(date, days) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function nextSevenDays(){
+  let today = new Date().toLocaleDateString();
+  const dates = [];
+  for (let i = 1; i < 8; i++){
+    dates.push(addDays(today,i));
+  }
+  return dates;
+}
 
 const findCustomerId = async (email) => {
   const data = await db.query(queries.getCustomerByEmail, [email]);
@@ -59,6 +73,10 @@ const findCustomerId = async (email) => {
 
 
 module.exports = {
+
+  getDates: () =>{
+    return nextSevenDays();
+  },
 
   saveCustomer: async (req, res) => {
     try {
@@ -144,6 +162,24 @@ module.exports = {
     }
   },
 
+  getServices: async (req, res) => {
+    try {
+      const services = await db.query(queries.getServices);
+      res.json(services);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+  getServiceProviders: async (req, res) => {
+    try {
+      const { serviceId } = req.body;
+      const providers = await db.query(queries.getServiceProviders, parseInt(serviceId, 10));
+      res.json(providers);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
 
   saveService: async (req, res) => {
     try {
@@ -165,31 +201,12 @@ module.exports = {
     }
   },
 
-  
+
   deleteSession: async (req, res) => {
     try {
       const { sessionId } = req.body;
       await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
       res.json({ success: true });
-    } catch (err) {
-      res.json({ error: err.message });
-    }
-  },
-
-  getServices: async (req, res) => {
-    try {
-      const services = await db.query(queries.getServices);
-      res.json(services);
-    } catch (err) {
-      res.json({ error: err.message });
-    }
-  },
-
-  getProviders: async (req, res) => {
-    try {
-      const { serviceId } = req.body;
-      const providers = await db.query(queries.getProviders, parseInt(serviceId, 10));
-      res.json(providers);
     } catch (err) {
       res.json({ error: err.message });
     }
