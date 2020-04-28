@@ -59,7 +59,7 @@ export default class ProviderDashboard extends Component {
         center: true,
         cell: row => 
         <div className="table-btn">
-          <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
         </div>
       }
     ];
@@ -71,7 +71,7 @@ export default class ProviderDashboard extends Component {
             <div className="page-container">
               <div className="container">
                 <div className="row">
-                  <div className="col-md-12"yearyear>
+                  <div className="col-md-12">
                     <div className="dashboard-wrap">
                       <div className="dashboard-head">
                         <div className="dashboard-left">
