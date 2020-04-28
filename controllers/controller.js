@@ -1,127 +1,164 @@
+/* eslint-disable prefer-destructuring */
 const db = require('../config/connection');
 const queries = require('../models/Schedule/scheduleQueries');
 
-module.exports = {
-  // saveProvider: (req, res) => {
-  //     // How to handle new service since need to save it and service ID
-  //     const { name,email,service,daily_slots} = req.body
-  //     db.query(queries.getServiceByName, service, (err, serviceId) => {
-  //         if (err) {
-  //           throw err
-  //         }
-  //         if (serviceId===null){
-  //     db.query(queries.insertProvider,[name,email,service_id,daily_slots], (err, dbRes) => {
-  //       if (err) {
-  //         throw err
-  //       }
-  //       db.query(queries.getServiceByName,name, (err, serviceId) => {
-  //         if (err) {
-  //           throw err
-  //         }
-  //         return res.json(serviceId)
-  //     })
-  //   },
 
+const findCustomerSessions = async (customerId) => {
+  const customerSessions = await db.query(queries.getCustomerSessions,
+    parseInt(customerId, 10));
+  return (customerSessions);
+};
+
+const findServiceId = async (name) => {
+  const serviceIds = await db.query(queries.getServiceByName, name);
+  let serviceId = 0;
+  if (serviceIds.length > 0) {
+    serviceId = serviceIds[0];
+  }
+  return serviceId;
+};
+
+const findOrCreateServiceId = async (name) => {
+  let serviceIds = await db.query(queries.getServiceByName, name);
+  if (serviceIds.length === 0) {
+    await db.query(queries.insertService, [name]);
+    serviceIds = await db.query(queries.getServiceByName, name);
+  }
+  return serviceIds[0].id;
+};
+
+const findProviderByEmail = async (email) => {
+  const data = await db.query(queries.getProviderByEmail, [email]);
+  const providerIds = JSON.parse(JSON.stringify(data));
+  let providerId = 0;
+  if (providerIds.length > 0) {
+    providerId = providerIds[0];
+  }
+  return providerId;
+};
+
+// const findProviderIdByNameAndEmail = async (name, email) => {
+//   const providerIds = await db.query(queries.getProviderByNameAndEmail, [name, email]);
+//   let providerId = 0;
+//   if (providerIds.length.length > 0) {
+//     providerId = providerIds[0].id;
+//   }
+//   return providerId;
+// };
+
+function addDays(date, days) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function nextSevenDays(){
+  let today = new Date().toLocaleDateString();
+  const dates = [];
+  for (let i = 1; i < 8; i++){
+    dates.push(addDays(today,i));
+  }
+  return dates;
+}
+
+const findCustomerId = async (email) => {
+  const data = await db.query(queries.getCustomerByEmail, [email]);
+  const customerIds = JSON.parse(JSON.stringify(data));
+  let customerId = 0;
+  if (customerIds.length > 0) {
+    customerId = customerIds[0].id;
+  }
+  return customerId;
+};
+
+
+module.exports = {
+
+  getDates: () =>{
+    return nextSevenDays();
+  },
 
   saveCustomer: async (req, res) => {
     try {
       const { name, email } = req.body;
-      await db.query(queries.insertCustomer, [name, email]);
-      const customerId = await db.query(queries.getCustomerByEmail, email);
-      res.json(customerId);
+      let customer;
+      const customerId = await findCustomerId(email);
+      if (customerId === 0) {
+        await db.query(queries.insertCustomer, [name, email]);
+        customer = await db.query(queries.getCustomerDataByEmail, [email]);
+      } else {
+        throw new Error(`email: ${email} is already used by a customer, choose a different email.`);
+      }
+      res.json(customer);
     } catch (err) {
-      res.json({ error: 'err' });
+      res.json({ error: err.message });
     }
   },
 
   saveProvider: async (req, res) => {
     try {
-      const { name, email, service, daily_slots } = req.body;
-      
-      await db.query(queries.insertService, [name, emai, service, daily_slots]);
-      const providerId = await db.query(queries.getCustomerByEmail, email);
-      res.json(providerId);
+      const {
+        name, email, service, slots,
+      } = req.body;
+      let provider;
+      const providerId = await findProviderByEmail(email);
+      if (providerId === 0) {
+        const serviceId = await findOrCreateServiceId(service);
+        await db.query(queries.insertProvider,
+          [name, email, serviceId, parseInt(slots, 10)]); //
+        provider = await db.query(queries.getProviderDataByEmail, [email]);
+      } else {
+        throw new Error(`email: ${email} is already used by a provider, choose a different email.`);
+      }
+      res.json(provider);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
-  saveService: (req, res) => {
-    const { name } = req.body;
-    db.query(queries.insertService, name, (err, dbRes) => {
-      if (err) {
-        throw err;
-      }
-      db.query(queries.getServiceByName, name, (err, serviceId) => {
-        if (err) {
-          throw err;
-        }
-        return res.json(serviceId);
-      });
-    });
-  },
-
-  providersLogin: async (req, res) => {
+  providerLogin: async (req, res) => {
     try {
-      const { providerId } = req.body;
-      const providerSessions = await db.query(queries.getProviderSessions, parseInt(providerId));
-      res.json(providerSessions);
+      const { name, email } = req.body;
+      const provider = await db.query(queries.getProviderByNameAndEmail, [name, email]);
+      if (provider.length === 0) {
+        throw new Error('Provider login failed!');
+      }
+      res.json(provider);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
   customerLogin: async (req, res) => {
     try {
-      const { customerId } = req.body;
-      const providerSessions = await db.query(queries.getCustomerSessions, parseInt(customerId));
-      res.json(providerSessions);
+      const { name, email } = req.body;
+      const customer = await db.query(queries.getCustomerByNameAndEmail, [name, email]);
+      if (customer.length === 0) {
+        throw new Error('Customer login failed!');
+      }
+      res.json(customer);
     } catch (err) {
-      res.json({ error: err });
-    }
-  },
-
-  getServiceId: async (req, res) => {
-    try {
-      console.log(req.body);
-      
-      const { name } = req.body;
-      console.log(name);
-      const serviceId = await db.query(queries.getServiceByName, name);
-      res.json(serviceId);
-    } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
   getCustomerSessions: async (req, res) => {
     try {
       const { customerId } = req.body;
-      const sessions = await db.query(queries.getCustomerSessions, [customerId]);
+      const sessions = await findCustomerSessions(customerId);
       res.json(sessions);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
   getProviderSessions: async (req, res) => {
-    console.log(req.body);
     try {
       const { providerId } = req.body;
       const sessions = await db.query(queries.getProviderSessions, [providerId]);
       res.json(sessions);
     } catch (err) {
-      res.json({ error: err });
-    }
-  },
-
-  deleteSession: async (req, res) => {
-    try {
-      const { sessionId } = req.body;
-      const sessions = await db.query(queries.deleteSessionById, parseInt(sessionId));
-      res.json({ success: true });
-    } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
@@ -130,38 +167,68 @@ module.exports = {
       const services = await db.query(queries.getServices);
       res.json(services);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
-  getProviders: async (req, res) => {
+  getServiceProviders: async (req, res) => {
     try {
       const { serviceId } = req.body;
-      const providers = await db.query(queries.getProviders, parseInt(providerId));
+      const providers = await db.query(queries.getServiceProviders, parseInt(serviceId, 10));
       res.json(providers);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
+    }
+  },
+
+  saveService: async (req, res) => {
+    try {
+      const { name } = req.body;
+      const serviceId = await findOrCreateServiceId(name);
+      res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+  getServiceId: async (req, res) => {
+    try {
+      const { name } = req.body;
+      const serviceId = await findServiceId(name);
+      res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+
+  deleteSession: async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
+      res.json({ success: true });
+    } catch (err) {
+      res.json({ error: err.message });
     }
   },
 
   getDates: async (req, res) => {
     try {
       const { providerId } = req.body;
-      const dates = await db.query(queries.deleteSessionById, parseInt(providerId));
+      const dates = await db.query(queries.deleteSessionById, parseInt(providerId, 10));
       res.json(dates);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
-
 
   getSlots: async (req, res) => {
     try {
       const { providerId, date } = req.body;
-      const dates = await db.query(queries.deleteSessionById, [parseInt(providerId), date]);
+      const dates = await db.query(queries.deleteSessionById, [parseInt(providerId, 10), date]);
       res.json(dates);
     } catch (err) {
-      res.json({ error: err });
+      res.json({ error: err.message });
     }
   },
 
