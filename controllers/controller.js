@@ -84,7 +84,7 @@ module.exports = {
       let customer;
       const customerId = await findCustomerId(email);
       if (customerId === 0) {
-        const check = await db.query(queries.insertCustomer, [name, email])
+        await db.query(queries.insertCustomer, [name, email]);
         customer = await db.query(queries.getCustomerDataByEmail, [email]);
       } else {
         throw new Error(`email: ${email} is already used by a customer, choose a different email.`);
