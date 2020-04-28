@@ -6,6 +6,7 @@ import './style.css';
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
+import axios from 'axios';
 
 
 export default class CustomerJoin extends Component {
@@ -29,7 +30,6 @@ export default class CustomerJoin extends Component {
 
 
   handleChange(e) {
-    const target = e.target;
     let fields = this.state.fields;
     fields[e.target.name] = e.target.value;
     this.setState({
@@ -43,10 +43,15 @@ export default class CustomerJoin extends Component {
 
   onSubmit(e) {
     e.preventDefault();
+    console.log("Submit");
     if (this.validateForm()) {
       console.log('Form data:')
       console.log(this.state.fields)
-      this.props.history.push('/customer_dashboard');
+      axios.post("/api/savecustomer", this.state.fields)
+        .then(res => {
+          console.log(res)
+          this.props.history.push('/customer_dashboard');
+        })
     }
   }
 

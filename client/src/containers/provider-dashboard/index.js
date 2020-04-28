@@ -38,8 +38,8 @@ export default class ProviderDashboard extends Component {
       { id: 1, provider: "Batman ", date: " ", time: " " }, 
       { id: 2, provider: "Spiderman ", date: " ", time: " " },
       { id: 3, provider: "Ironman ", date: " ", time: " " },
-      { id: 4, provider: " ", date: " ", time: " " },
-      { id: 5, provider: " ", date: " ", time: " " },
+      { id: 4, provider: "Thor ", date: " ", time: " " },
+      { id: 5, provider: "Hulk ", date: " ", time: " " },
     ];
     const columns = [
       {

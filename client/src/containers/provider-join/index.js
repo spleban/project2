@@ -6,6 +6,7 @@ import './style.css';
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
+import Axios from 'axios';
 
 
 export default class ProviderJoin extends Component {
@@ -48,7 +49,11 @@ export default class ProviderJoin extends Component {
     if (this.validateForm()) {
       console.log('Form data:')
       console.log(this.state.fields)
-      this.props.history.push('/provider_dashboard');
+      Axios.post("/api/saveprovider", this.state.fields)
+        .then(res => {
+          console.log(res)
+          this.props.history.push('/provider_dashboard');
+        })
     }
   }
 
