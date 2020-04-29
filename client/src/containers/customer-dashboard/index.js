@@ -51,10 +51,32 @@ export default class CustomerDashboard extends Component {
      
   };
 
-  handleChangeService = (e) => {
-    this.setState({ 
-      service: e.target.value
-    });  
+  handleChangeService = async (e) => {
+    try{
+      const { data } = await axios.post("/api/getserviceproviders",e.target.value);
+       if (data.error === undefined)
+       {
+         console.log(data);
+         localStorage.setItem("sessionProviders",data);
+         console.log(localStorage.getItem("serviceProviders"));
+         this.setState({ 
+          service: e.target.value
+        }); 
+       } else {
+         alert(data.error);
+         this.setState({
+          popupShow: true
+        });
+       }
+     }
+     catch (err) {
+        alert(err);
+        this.setState({
+          popupShow: true
+        });
+     } 
+  
+     
   };
 
   handleChangeProvider = (e) => {
@@ -81,12 +103,27 @@ export default class CustomerDashboard extends Component {
     this.props.history.push('/login');
   }
   
-  popupOpen(){
+  popupOpen = async () => {
     console.log('in popup open');
-    
-    this.setState({ 
-      popupShow: true
-    });
+    try{
+      const { data } = await axios.get("/api/getservices");
+       if (data.error === undefined)
+       {
+         console.log(data);
+         localStorage.setItem("serviceOptions",data);
+         console.log(localStorage.getItem("serviceOption"));
+         this.setState({
+           popupShow: true
+         });
+       } else {
+         alert(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+     catch (err) {
+        alert(err);
+        this.props.history.push('/customer_join');
+     } 
   } 
 
   popupClose(){
