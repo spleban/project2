@@ -24,7 +24,6 @@ router.route('/getprovidersessions')
   .post(controller.getProviderSessions);
 router.route('/getservices')
   .get(controller.getServices);
-
 router.route('/getserviceproviders')
   .post(controller.getServiceProviders);
 module.exports = router;

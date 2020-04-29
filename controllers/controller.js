@@ -47,16 +47,16 @@ const findProviderByEmail = async (email) => {
 // };
 
 function addDays(date, days) {
-  var result = new Date(date);
+  const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
 }
 
-function nextSevenDays(){
-  let today = new Date().toLocaleDateString();
+function nextSevenDays() {
+  const today = new Date().toLocaleDateString();
   const dates = [];
-  for (let i = 1; i < 8; i++){
-    dates.push(addDays(today,i));
+  for (let i = 1; i < 8; i += 1) {
+    dates.push(addDays(today, i));
   }
   return dates;
 }
@@ -74,20 +74,19 @@ const findCustomerId = async (email) => {
 
 module.exports = {
 
-  getDates: () =>{
-    return nextSevenDays();
-  },
+  defineNextSevenDates: () => nextSevenDays(),
 
   saveCustomer: async (req, res) => {
     try {
-      const { name, email } = req.body;
       let customer;
+      const { name, email } = req.body;
       const customerId = await findCustomerId(email);
       if (customerId === 0) {
         await db.query(queries.insertCustomer, [name, email]);
         customer = await db.query(queries.getCustomerDataByEmail, [email]);
+        // customerId = JSON.parse(JSON.stringify(response[0])).id;
       } else {
-        throw new Error(`email: ${email} is already used by a customer, choose a different email.`);
+        throw new Error(`email: ${email} is already used by another customer, choose a different email.`);
       }
       res.json(customer);
     } catch (err) {
@@ -97,18 +96,18 @@ module.exports = {
 
   saveProvider: async (req, res) => {
     try {
+      let provider;
       const {
         name, email, service, slots,
       } = req.body;
-      let provider;
       const providerId = await findProviderByEmail(email);
       if (providerId === 0) {
         const serviceId = await findOrCreateServiceId(service);
         await db.query(queries.insertProvider,
           [name, email, serviceId, parseInt(slots, 10)]); //
         provider = await db.query(queries.getProviderDataByEmail, [email]);
-      } else {
-        throw new Error(`email: ${email} is already used by a provider, choose a different email.`);
+       } else {
+        throw new Error(`email: ${email} is already used by another provider, choose a different email.`);
       }
       res.json(provider);
     } catch (err) {

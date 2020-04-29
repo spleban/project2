@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+//import { NavLink,Link } from "react-router-dom";
 
 
 export default class StepOne extends Component {
 
-  constructor(props) {
-   super(props);
+  // constructor(props) {
+  //  super(props);
    
-  };
+  // };
 
   
 

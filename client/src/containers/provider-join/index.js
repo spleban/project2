@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+//import { NavLink,Link } from "react-router-dom";
 import './style.css';
-
-
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
@@ -19,7 +17,7 @@ export default class ProviderJoin extends Component {
         name: '',
         email: '',
         service: '',
-        no_services_day: ''
+        slots: ''
       },
       errors: {},
    }
@@ -32,7 +30,7 @@ export default class ProviderJoin extends Component {
 
 
   handleChange(e) {
-    const target = e.target;
+    //const target = e.target;
     let fields = this.state.fields;
     fields[e.target.name] = e.target.value;
     this.setState({
@@ -47,16 +45,23 @@ export default class ProviderJoin extends Component {
   onSubmit(e) {
     e.preventDefault();
     if (this.validateForm()) {
-      console.log('Form data:')
-      console.log(this.state.fields)
-      Axios.post("/api/saveprovider", this.state.fields)
+        Axios.post("/api/saveprovider", this.state.fields)
         .then(res => {
-          console.log(res)
-          this.props.history.push('/provider_dashboard');
-        })
+          if (res.data.error === undefined)
+          {
+            localStorage.setItem("provider",res.data[0]);
+            this.props.history.push('/provider_dashboard');
+          } else {
+            alert(res.data.error);
+            this.props.history.push('/provider_join');
+          }  
+        }, (err) =>{
+           alert(err.error);
+           this.props.history.push('/provider_join');
+        }
+      )
     }
   }
-
 
   validateForm() {
     let fields = this.state.fields;
@@ -78,9 +83,9 @@ export default class ProviderJoin extends Component {
       errors["service"] = "*Please enter service provided.";
     }
 
-    if (!fields["no_services_day"]) {
+    if (!fields["slots"]) {
       formIsValid = false;
-      errors["no_services_day"] = "*Please enter your slots in a day.";
+      errors["slots"] = "*Please enter your slots in a day.";
     }
 
     this.setState({
@@ -130,8 +135,8 @@ export default class ProviderJoin extends Component {
                             </div>
                             <div className="form-row">
                               <label>No.# services a day:</label>
-                              <input type="text" name="no_services_day" className="input-style" value={this.state.fields.no_services_day} onChange={this.handleChange} />
-                              <div className="errorMsg">{this.state.errors.no_services_day}</div>
+                              <input type="text" name="slots" className="input-style" value={this.state.fields.slots} onChange={this.handleChange} />
+                              <div className="errorMsg">{this.state.errors.slots}</div>
                             </div>
                             <div className="form-row btn-blk two-btns-blk">
                               <button className="btn-common grey-col" onClick={this.back}>Back</button>

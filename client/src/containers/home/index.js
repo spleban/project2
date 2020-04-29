@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+//import { NavLink,Link } from "react-router-dom";
 import './style.css';
 
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from 'moment'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 
-const localizer = momentLocalizer(moment)
+//const localizer = momentLocalizer(moment)
 
 export default class Home extends Component {
   

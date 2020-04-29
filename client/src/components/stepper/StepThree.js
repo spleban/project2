@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+//import { NavLink,Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import subDays from "date-fns/subDays";
@@ -7,11 +7,11 @@ import subDays from "date-fns/subDays";
 
 export default class StepThree extends Component {
 
-  constructor(props) {
-   super(props);
+  // constructor(props) {
+  //  super(props);
 
    
-  };
+  // };
 
 
   

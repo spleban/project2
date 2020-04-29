@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
 import './style.css';
-
-
-
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 import axios from 'axios';
-
 
 export default class CustomerJoin extends Component {
   
@@ -25,9 +20,7 @@ export default class CustomerJoin extends Component {
    this.handleChange = this.handleChange.bind(this);
    this.onSubmit = this.onSubmit.bind(this);
    this.back = this.back.bind(this);
-   
-  };
-
+   };
 
   handleChange(e) {
     let fields = this.state.fields;
@@ -43,15 +36,25 @@ export default class CustomerJoin extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    console.log("Submit");
+        
     if (this.validateForm()) {
-      console.log('Form data:')
-      console.log(this.state.fields)
       axios.post("/api/savecustomer", this.state.fields)
         .then(res => {
-          console.log(res)
-          this.props.history.push('/customer_dashboard');
-        })
+                 
+          if (res.data.error === undefined)
+          {
+            localStorage.setItem("customer",res.data[0]);
+                        
+            this.props.history.push('/customer_dashboard');
+          } else {
+            alert(res.data.error);
+            this.props.history.push('/customer_join');
+          }  
+        }, (err) =>{
+           alert(err.error);
+           this.props.history.push('/customer_join');
+        }
+      )
     }
   }
 

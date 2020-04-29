@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import { Modal } from 'react-bootstrap';
-import DatePicker from "react-datepicker";
+//import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './style.css';
 import moment from 'moment';
-
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
@@ -165,7 +164,7 @@ export default class CustomerDashboard extends Component {
         center: true,
         cell: row => 
         <div className="table-btn">
-          <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
         </div>
       }
     ];
@@ -214,14 +213,14 @@ export default class CustomerDashboard extends Component {
                   <MultiStep steps={steps} />
                 </div>
                 <div className="stepper-btn">
-                  { ((this.state.service != '') && (this.state.provider != '') && (this.state.date != '') && (this.state.time != '')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
+                  { ((this.state.service !=='') && (this.state.provider !=='') && (this.state.date !=='') && (this.state.time !=='')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
                 </div>
-                { (this.state.service != '') ?
+                { (this.state.service !=='') ?
                   <div className="stepper-data">
-                    { (this.state.service != '') ?  <span>Service: {session_data.service}</span> : '' } 
-                    { (this.state.provider != '') ?  <span>Provider: {session_data.provider}</span> : '' } 
-                    { (this.state.date != '') ?  <span>Date: {session_data.date}</span> : '' } 
-                    { (this.state.time != '') ?  <span>Time: {session_data.time}</span> : '' } 
+                    { (this.state.service !=='') ?  <span>Service: {session_data.service}</span> : '' } 
+                    { (this.state.provider !=='') ?  <span>Provider: {session_data.provider}</span> : '' } 
+                    { (this.state.date !=='') ?  <span>Date: {session_data.date}</span> : '' } 
+                    { (this.state.time !=='') ?  <span>Time: {session_data.time}</span> : '' } 
                   </div>
                 : ''
                 }

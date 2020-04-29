@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavLink,Link } from "react-router-dom";
 import './style.css';
-
+import Axios from 'axios';
 
 
 import Header from '../../components/header/index.js';
@@ -36,6 +36,7 @@ export default class Login extends Component {
     });
   }
 
+  
   onClick(e,login_type) {
     e.preventDefault();
     if (this.validateForm()) {
@@ -72,11 +73,6 @@ export default class Login extends Component {
     return formIsValid;
   }
 
-
-
-
-  
-  
 
   render() {
 
@@ -130,3 +126,28 @@ export default class Login extends Component {
     )
   }
 }
+
+// getData(apiLogin,localStorageName,dashboard,fields) {
+//   Axios.post(apiLogin, fields);
+//   .then(res => {
+//     if (res.data.error === undefined)
+//     {
+//       localStorage.setItem(localStorageName,res.data[0]);
+//       this.props.history.push(dashboard);
+//     } else {
+//       alert(res.data.error);
+//       this.props.history.push('/login');
+//     }  
+//   }, (err) =>{
+//      alert(err.error);
+//      this.props.history.push('/login');
+//   }
+// }
+
+// if(login_type == 'provider_login'){
+//   getData("/api/providerlogin","provider",'/provider_dashboard',this.state.fields)
+//   this.props.history.push('/provider_dashboard');
+// } else {
+//   getData("/api/customerlogin","customer",'/customer_dashboard,this.state.fields)
+//   this.props.history.push('/customer_dashboard');
+// }
