@@ -6,7 +6,7 @@ import { Modal } from 'react-bootstrap';
 import "react-datepicker/dist/react-datepicker.css";
 import './style.css';
 import moment from 'moment';
-
+import axios from 'axios';
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 
@@ -48,11 +48,8 @@ export default class CustomerDashboard extends Component {
    this.handleChangeDate = this.handleChangeDate.bind(this);
    this.handleChangeTime = this.handleChangeTime.bind(this);
    this.sessionSave = this.sessionSave.bind(this);
-   
-   
-   
+     
   };
-
 
   handleChangeService = (e) => {
     this.setState({ 
@@ -85,6 +82,8 @@ export default class CustomerDashboard extends Component {
   }
   
   popupOpen(){
+    console.log('in popup open');
+    
     this.setState({ 
       popupShow: true
     });
@@ -114,8 +113,6 @@ export default class CustomerDashboard extends Component {
     console.log(time)
     this.popupClose();
   }
-
-  
   
 
   render() {
@@ -134,7 +131,6 @@ export default class CustomerDashboard extends Component {
       {name: 'StepFour', component: <StepFour time={this.state.time} handleChangeTime={this.handleChangeTime} />}
     ];
 
-
     const data = [
       { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
       { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
@@ -142,6 +138,7 @@ export default class CustomerDashboard extends Component {
       { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
       { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
     ];
+
     const columns = [
       {
         name: 'Provider',
@@ -233,3 +230,21 @@ export default class CustomerDashboard extends Component {
     )
   }
 }
+
+// 
+// axios.get("/api/getservices")
+// .then(res => {
+//   if (res.data.error === undefined)
+//   {
+//     localStorage.setItem("serviceOptions",res.data[0]);
+//     this.setState({ 
+//       popupShow: true
+//     });
+//   } else {
+//     alert(res.data.error);
+//     this.props.history.push('/customer_dashboard');
+//   }  
+// }, (err) =>{
+//    alert(err.error);
+//    this.props.history.push('/customer_dashoboard');
+// }

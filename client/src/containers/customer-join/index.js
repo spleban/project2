@@ -34,28 +34,28 @@ export default class CustomerJoin extends Component {
     this.props.history.push('/');
   }
 
-  onSubmit(e) {
+  onSubmit = async e => {
     e.preventDefault();
         
     if (this.validateForm()) {
-      axios.post("/api/savecustomer", this.state.fields)
-        .then(res => {
-                 
-          if (res.data.error === undefined)
-          {
-            localStorage.setItem("customer",res.data[0]);
-                        
+      try {
+       const { data } = await axios.post("/api/savecustomer", this.state.fields)
+       console.log(data);
+       console.log(data.error);
+       if (data.error === undefined)
+       {
+            localStorage.setItem("customer",data[0]);
             this.props.history.push('/customer_dashboard');
-          } else {
-            alert(res.data.error);
+        } else {
+            alert(data.error);
             this.props.history.push('/customer_join');
           }  
-        }, (err) =>{
-           alert(err.error);
+        }
+        catch (err) {
+           alert(err);
            this.props.history.push('/customer_join');
         }
-      )
-    }
+      }
   }
 
 

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 //import { NavLink,Link } from "react-router-dom";
 
-
 export default class StepOne extends Component {
 
   // constructor(props) {
@@ -9,7 +8,13 @@ export default class StepOne extends Component {
    
   // };
 
-  
+  populateServices() {
+    const options = localStorage.serviceOptions;
+    for (let i = 0; i < options.length; i++){
+
+    }
+
+  }
 
   render() {
     return (

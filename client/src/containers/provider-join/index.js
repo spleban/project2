@@ -4,7 +4,7 @@ import './style.css';
 
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-import Axios from 'axios';
+import axios from 'axios';
 
 
 export default class ProviderJoin extends Component {
@@ -42,26 +42,29 @@ export default class ProviderJoin extends Component {
     this.props.history.push('/');
   }
 
-  onSubmit(e) {
+  onSubmit = async e  => {
     e.preventDefault();
     if (this.validateForm()) {
-        Axios.post("/api/saveprovider", this.state.fields)
-        .then(res => {
-          if (res.data.error === undefined)
-          {
-            localStorage.setItem("provider",res.data[0]);
-            this.props.history.push('/provider_dashboard');
-          } else {
-            alert(res.data.error);
+      try {
+        const { data } = await axios.post("/api/saveprovider", this.state.fields)
+        console.log(data);
+        console.log(data.error);
+        if (data.error === undefined)
+        {
+             localStorage.setItem("provider",data[0]);
+             this.props.history.push('/provider_dashboard');
+         } else {
+             alert(data.error);
+             this.props.history.push('/provider_join');
+           }  
+         }
+         catch (err) {
+            alert(err);
             this.props.history.push('/provider_join');
-          }  
-        }, (err) =>{
-           alert(err.error);
-           this.props.history.push('/provider_join');
-        }
-      )
+         }
+       }
     }
-  }
+  
 
   validateForm() {
     let fields = this.state.fields;
@@ -94,11 +97,6 @@ export default class ProviderJoin extends Component {
     return formIsValid;
   }
 
-
-
-
-  
-  
 
   render() {
 
