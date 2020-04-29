@@ -70,3 +70,18 @@ routes
 6. Orm function make db query and returns results (callback function)
 7. Controller does res.json() with the new data
 8. Arrives back in the frontend
+
+
+
+inside customer-dashboard
+in ComponentDidMount
+    read services from local storage
+    save services to state
+    pass this.state.services into StepOne component as a services prop
+
+inside StepOne
+    under select tag
+    call renderOptions
+        renderOption() {
+            props.services.map(service => <option value={service.id}>)
+        }

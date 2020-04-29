@@ -36,7 +36,15 @@ export default class CustomerDashboard extends Component {
       provider: '',
       date: '',
       time: '',
-      stepperError: ''
+      stepperError: '',
+      services: [],
+      sessionData: [
+        { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
+        { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
+        { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
+        { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
+        { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
+      ]
 
    }
    
@@ -50,6 +58,38 @@ export default class CustomerDashboard extends Component {
    this.sessionSave = this.sessionSave.bind(this);
      
   };
+
+  componentDidMount() {
+    this.getServices();
+  }
+
+  async getServices() {
+    try{
+      const { data } = await axios.get("/api/getservices");
+       if (data.error === undefined)
+       {
+         console.log(data);
+        //  localStorage.setItem("services",data);
+        //  console.log(localStorage.getItem("services"));
+         this.setState({
+           services: data
+         });
+       } else {
+         alert(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+     catch (err) {
+        alert(err);
+        this.props.history.push('/customer_join');
+     } 
+    // let services = localStorage.getItem("services");
+    // console.log("raw", services)
+    // let parsedServices = JSON.parse(services)
+    // console.log("parsed", parsedServices)
+    // this.setState({ services: parsedServices });
+  }
+  
 
   handleChangeService = async (e) => {
     try{
@@ -86,16 +126,16 @@ export default class CustomerDashboard extends Component {
   };
 
   handleChangeDate = (val,field_name) => {
-    this.state.date=val
+    // this.state.date=val
     this.setState({ 
-        date: this.state.date
+        date: val
     });  
   };
 
   handleChangeTime = (val,field_name) => {
-    this.state.time=val
+    // this.state.time=val
     this.setState({ 
-        time: this.state.time
+        time: val
     });  
   };
 
@@ -105,25 +145,25 @@ export default class CustomerDashboard extends Component {
   
   popupOpen = async () => {
     console.log('in popup open');
-    try{
-      const { data } = await axios.get("/api/getservices");
-       if (data.error === undefined)
-       {
-         console.log(data);
-         localStorage.setItem("serviceOptions",data);
-         console.log(localStorage.getItem("serviceOption"));
+    // try{
+    //   const { data } = await axios.get("/api/getservices");
+    //    if (data.error === undefined)
+    //    {
+    //      console.log(data);
+    //      localStorage.setItem("services",data);
+    //      console.log(localStorage.getItem("services"));
          this.setState({
            popupShow: true
          });
-       } else {
-         alert(data.error);
-         this.props.history.push('/customer_dashboard');
-       }
-     }
-     catch (err) {
-        alert(err);
-        this.props.history.push('/customer_join');
-     } 
+    //    } else {
+    //      alert(data.error);
+    //      this.props.history.push('/customer_dashboard');
+    //    }
+    //  }
+    //  catch (err) {
+    //     alert(err);
+    //     this.props.history.push('/customer_join');
+    //  } 
   } 
 
   popupClose(){
@@ -162,19 +202,19 @@ export default class CustomerDashboard extends Component {
     }
 
     const steps = [
-      {name: 'StepOne', component: <StepOne service={this.state.service} handleChangeService={this.handleChangeService} />},
+      {name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} />},
       {name: 'StepTwo', component: <StepTwo provider={this.state.provider} handleChangeProvider={this.handleChangeProvider} />},
       {name: 'StepThree', component: <StepThree date={this.state.date} handleChangeDate={this.handleChangeDate} />},
       {name: 'StepFour', component: <StepFour time={this.state.time} handleChangeTime={this.handleChangeTime} />}
     ];
 
-    const data = [
-      { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-      { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
-      { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
-      { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-      { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
-    ];
+    // const data = [
+    //   { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
+    //   { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
+    //   { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
+    //   { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
+    //   { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
+    // ];
 
     const columns = [
       {
@@ -223,7 +263,7 @@ export default class CustomerDashboard extends Component {
                         </div>
                       </div>
                       <div className="dashboard-content">
-                        <DataTable columns={columns} data={data} />
+                        <DataTable columns={columns} data={this.state.sessionData} />
                       </div>
                     </div>
                   </div>
@@ -268,20 +308,3 @@ export default class CustomerDashboard extends Component {
   }
 }
 
-// 
-// axios.get("/api/getservices")
-// .then(res => {
-//   if (res.data.error === undefined)
-//   {
-//     localStorage.setItem("serviceOptions",res.data[0]);
-//     this.setState({ 
-//       popupShow: true
-//     });
-//   } else {
-//     alert(res.data.error);
-//     this.props.history.push('/customer_dashboard');
-//   }  
-// }, (err) =>{
-//    alert(err.error);
-//    this.props.history.push('/customer_dashoboard');
-// }

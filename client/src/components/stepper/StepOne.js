@@ -16,17 +16,22 @@ export default class StepOne extends Component {
 
   }
 
+  renderOptions() {
+    this.props.services.map(service => <option value={service.id}>{service.name}</option>)
+  }
+
   render() {
     return (
       <div className="form-blk">
         <div className="form-row">
           <label>Select service:</label>
           <select name="service" value={this.props.service} onChange={this.props.handleChangeService} >
-            <option value="">Select service</option>
+            {this.props.services.map(service => <option value={service.id}>{service.name}</option>)}
+            {/* <option value="">Select service</option>
             <option value="Spiderman ">Spiderman</option>
             <option value="Batman ">Batman</option>
             <option value="Ironman ">Iron Man</option>
-            <option value="Hulk ">Hulk</option>
+            <option value="Hulk ">Hulk</option> */}
           </select>
         </div>
       </div>
