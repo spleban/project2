@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import { Modal } from 'react-bootstrap';
-import DatePicker from "react-datepicker";
+//import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './style.css';
 import moment from 'moment';
-
-
+import axios from 'axios';
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 
@@ -37,7 +36,15 @@ export default class CustomerDashboard extends Component {
       provider: '',
       date: '',
       time: '',
-      stepperError: ''
+      stepperError: '',
+      services: [],
+      sessionData: [
+        { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
+        { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
+        { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
+        { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
+        { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
+      ]
 
    }
    
@@ -49,16 +56,67 @@ export default class CustomerDashboard extends Component {
    this.handleChangeDate = this.handleChangeDate.bind(this);
    this.handleChangeTime = this.handleChangeTime.bind(this);
    this.sessionSave = this.sessionSave.bind(this);
-   
-   
-   
+     
   };
 
+  componentDidMount() {
+    this.getServices();
+  }
 
-  handleChangeService = (e) => {
-    this.setState({ 
-      service: e.target.value
-    });  
+  async getServices() {
+    try{
+      const { data } = await axios.get("/api/getservices");
+       if (data.error === undefined)
+       {
+         console.log(data);
+        //  localStorage.setItem("services",data);
+        //  console.log(localStorage.getItem("services"));
+         this.setState({
+           services: data
+         });
+       } else {
+         alert(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+     catch (err) {
+        alert(err);
+        this.props.history.push('/customer_join');
+     } 
+    // let services = localStorage.getItem("services");
+    // console.log("raw", services)
+    // let parsedServices = JSON.parse(services)
+    // console.log("parsed", parsedServices)
+    // this.setState({ services: parsedServices });
+  }
+  
+
+  handleChangeService = async (e) => {
+    try{
+      const { data } = await axios.post("/api/getserviceproviders",e.target.value);
+       if (data.error === undefined)
+       {
+         console.log(data);
+         localStorage.setItem("sessionProviders",data);
+         console.log(localStorage.getItem("serviceProviders"));
+         this.setState({ 
+          service: e.target.value
+        }); 
+       } else {
+         alert(data.error);
+         this.setState({
+          popupShow: true
+        });
+       }
+     }
+     catch (err) {
+        alert(err);
+        this.setState({
+          popupShow: true
+        });
+     } 
+  
+     
   };
 
   handleChangeProvider = (e) => {
@@ -68,16 +126,16 @@ export default class CustomerDashboard extends Component {
   };
 
   handleChangeDate = (val,field_name) => {
-    this.state.date=val
+    // this.state.date=val
     this.setState({ 
-        date: this.state.date
+        date: val
     });  
   };
 
   handleChangeTime = (val,field_name) => {
-    this.state.time=val
+    // this.state.time=val
     this.setState({ 
-        time: this.state.time
+        time: val
     });  
   };
 
@@ -85,10 +143,27 @@ export default class CustomerDashboard extends Component {
     this.props.history.push('/login');
   }
   
-  popupOpen(){
-    this.setState({ 
-      popupShow: true
-    });
+  popupOpen = async () => {
+    console.log('in popup open');
+    // try{
+    //   const { data } = await axios.get("/api/getservices");
+    //    if (data.error === undefined)
+    //    {
+    //      console.log(data);
+    //      localStorage.setItem("services",data);
+    //      console.log(localStorage.getItem("services"));
+         this.setState({
+           popupShow: true
+         });
+    //    } else {
+    //      alert(data.error);
+    //      this.props.history.push('/customer_dashboard');
+    //    }
+    //  }
+    //  catch (err) {
+    //     alert(err);
+    //     this.props.history.push('/customer_join');
+    //  } 
   } 
 
   popupClose(){
@@ -115,8 +190,6 @@ export default class CustomerDashboard extends Component {
     console.log(time)
     this.popupClose();
   }
-
-  
   
 
   render() {
@@ -129,20 +202,20 @@ export default class CustomerDashboard extends Component {
     }
 
     const steps = [
-      {name: 'StepOne', component: <StepOne service={this.state.service} handleChangeService={this.handleChangeService} />},
+      {name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} />},
       {name: 'StepTwo', component: <StepTwo provider={this.state.provider} handleChangeProvider={this.handleChangeProvider} />},
       {name: 'StepThree', component: <StepThree date={this.state.date} handleChangeDate={this.handleChangeDate} />},
       {name: 'StepFour', component: <StepFour time={this.state.time} handleChangeTime={this.handleChangeTime} />}
     ];
 
+    // const data = [
+    //   { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
+    //   { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
+    //   { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
+    //   { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
+    //   { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
+    // ];
 
-    const data = [
-      { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-      { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
-      { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
-      { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-      { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
-    ];
     const columns = [
       {
         name: 'Provider',
@@ -165,7 +238,7 @@ export default class CustomerDashboard extends Component {
         center: true,
         cell: row => 
         <div className="table-btn">
-          <a href="#"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
         </div>
       }
     ];
@@ -190,7 +263,7 @@ export default class CustomerDashboard extends Component {
                         </div>
                       </div>
                       <div className="dashboard-content">
-                        <DataTable columns={columns} data={data} />
+                        <DataTable columns={columns} data={this.state.sessionData} />
                       </div>
                     </div>
                   </div>
@@ -214,14 +287,14 @@ export default class CustomerDashboard extends Component {
                   <MultiStep steps={steps} />
                 </div>
                 <div className="stepper-btn">
-                  { ((this.state.service != '') && (this.state.provider != '') && (this.state.date != '') && (this.state.time != '')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
+                  { ((this.state.service !=='') && (this.state.provider !=='') && (this.state.date !=='') && (this.state.time !=='')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
                 </div>
-                { (this.state.service != '') ?
+                { (this.state.service !=='') ?
                   <div className="stepper-data">
-                    { (this.state.service != '') ?  <span>Service: {session_data.service}</span> : '' } 
-                    { (this.state.provider != '') ?  <span>Provider: {session_data.provider}</span> : '' } 
-                    { (this.state.date != '') ?  <span>Date: {session_data.date}</span> : '' } 
-                    { (this.state.time != '') ?  <span>Time: {session_data.time}</span> : '' } 
+                    { (this.state.service !=='') ?  <span>Service: {session_data.service}</span> : '' } 
+                    { (this.state.provider !=='') ?  <span>Provider: {session_data.provider}</span> : '' } 
+                    { (this.state.date !=='') ?  <span>Date: {session_data.date}</span> : '' } 
+                    { (this.state.time !=='') ?  <span>Time: {session_data.time}</span> : '' } 
                   </div>
                 : ''
                 }
@@ -234,3 +307,4 @@ export default class CustomerDashboard extends Component {
     )
   }
 }
+

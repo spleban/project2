@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import './style.css';
-
-
-
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-
 
 export default class ProviderDashboard extends Component {
   
@@ -26,25 +22,20 @@ export default class ProviderDashboard extends Component {
     this.props.history.push('/login');
   }
   
-
-
-
-
-  
   
 
   render() {
     const data = [
-      { id: 1, provider: "Batman ", date: " ", time: " " }, 
-      { id: 2, provider: "Spiderman ", date: " ", time: " " },
-      { id: 3, provider: "Ironman ", date: " ", time: " " },
-      { id: 4, provider: "Thor ", date: " ", time: " " },
-      { id: 5, provider: "Hulk ", date: " ", time: " " },
+      { id: 1, customer: "Batman ", date: " ", time: " " }, 
+      { id: 2, customer: "Spiderman ", date: " ", time: " " },
+      { id: 3, customer: "Ironman ", date: " ", time: " " },
+      { id: 4, customer: "Thor ", date: " ", time: " " },
+      { id: 5, customer: "Hulk ", date: " ", time: " " },
     ];
     const columns = [
       {
-        name: 'Provider',
-        selector: 'provider',
+        name: 'Customer',
+        selector: 'customer',
       },
       {
         name: 'Date',
@@ -75,7 +66,7 @@ export default class ProviderDashboard extends Component {
                     <div className="dashboard-wrap">
                       <div className="dashboard-head">
                         <div className="dashboard-left">
-                          <h4>Providers</h4>
+                          <h4>Customers</h4>
                         </div>
                         <div className="dashboard-right">
                            <button className="btn-common grey-col" onClick={this.back}>Exit</button>

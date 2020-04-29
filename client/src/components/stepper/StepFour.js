@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
 export default class StepFour extends Component {
 
-  constructor(props) {
-   super(props);
+  // constructor(props) {
+  //  super(props);
 
    
-  };
+  // };
 
   
 
