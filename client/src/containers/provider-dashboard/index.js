@@ -38,7 +38,6 @@ export default class ProviderDashboard extends Component {
       const { data } = await axios.post("/api/getprovidersessions",{providerId: providerId});
        if (data.error === undefined)
        {
-         console.log(data);
            this.setState({
            sessionData: data
          });
