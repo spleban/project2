@@ -64,10 +64,8 @@ export default class Login extends Component {
       console.log(login_type)
       if(login_type == 'provider_login'){
         this.getData('/api/providerlogin','provider','/provider_dashboard',this.state.fields);
-        this.props.history.push('/provider_dashboard');
-      } else {
+        } else {
         this.getData('/api/customerlogin','customer','/customer_dashboard',this.state.fields);
-        this.props.history.push('/customer_dashboard');
       }
     }
   }
