@@ -24,9 +24,9 @@ export default class CustomerDashboard extends Component {
    this.state = {
       popupShow: false,
       
-      customerId: '',
-      serviceId: '',  
-      providerId: '',
+      customer: '',
+      service: '',  
+      provider: '',
       date: '',
       slot: '',
       
@@ -51,7 +51,7 @@ export default class CustomerDashboard extends Component {
    this.handleChangeService = this.handleChangeService.bind(this);
    this.handleChangeProvider = this.handleChangeProvider.bind(this);
    this.handleChangeDate = this.handleChangeDate.bind(this);
-   this.handleChangeslot = this.handleChangeslot.bind(this);
+   this.handleChangeSlot = this.handleChangeSlot.bind(this);
    this.sessionSave = this.sessionSave.bind(this);
      
   };
@@ -84,11 +84,11 @@ export default class CustomerDashboard extends Component {
   async getSessions() {
     try{
       const customer = JSON.parse(localStorage.getItem("customer"));
-      const customerId = customer.id;
+      
       this.setState({
-        customerId: customerId
+        customer: customer.id
       }); 
-      const { data } = await axios.post("/api/getcustomersessions",{customerId: customerId});
+      const { data } = await axios.post("/api/getcustomersessions",{customerId: customer.id});
        if (data.error === undefined)
        {
            this.setState({
@@ -106,38 +106,17 @@ export default class CustomerDashboard extends Component {
     
   }
  
-
-  async getProviders() {
-    try{
-      const serviceId = JSON.parse(localStorage.getItem("serviceId"));
-      const { data } = await axios.post("/api/getserviceproviders",{serviceId: serviceId});
-       if (data.error === undefined)
-       {
-           this.setState({
-           providers: data
-         });
-       } else {
-         console.log(data.error);
-         this.props.history.push('/customer_dashboard');
-       }
-     }
-      catch (err) {
-         console.log(err);
-         this.props.history.push('/customer_dashboard');
-      } 
-    
-  }
- 
-
   handleChangeService = async (e) => {
     try{
-      const { data } = await axios.post("/api/getserviceproviders",e.target.value);
-       if (data.error === undefined)
+      const service = e.target.value;
+      console.log(e.target.value);
+      const { data } = await axios.post("/api/getserviceproviders",{serviceId:service});
+      console.log(data);
+      if (data.error === undefined)
        {
-         localStorage.setItem("sessionProviders",JSON.stringify(data));
-         console.log(JSON.parse(localStorage.getItem("serviceProviders")));
          this.setState({ 
-          serviceId: e.target.value
+          service: service,
+          providers: data
         }); 
        } else {
          console.log(data.error);
@@ -156,21 +135,65 @@ export default class CustomerDashboard extends Component {
      
   };
 
-  handleChangeProvider = (e) => {
-    this.setState({ 
-      provider: e.target.value
-    });  
+  handleChangeProvider = async (e) => {
+    try{
+      const provider = e.target.value;
+      console.log(e.target.value);
+      const { data } = await axios.post("/api/getproviderdates",{providerId:provider});
+      console.log(data);
+      if (data.error === undefined)
+       {
+         this.setState({ 
+          provider: provider,
+          dates: data
+        }); 
+       } else {
+         console.log(data.error);
+         this.setState({
+          popupShow: true
+        });
+       }
+     }
+     catch (err) {
+        console.log(err);
+        this.setState({
+          popupShow: true
+        });
+     }    
   };
 
-  handleChangeDate = (val,field_name) => {
-    this.setState({ 
-        date: val
-    });  
-  };
+  handleChangeDate = async (e) => {
+    try{
+      const date = e.target.value;
+      console.log(e.target.value);
+      const { data } = await axios.post("/api/getproviderslots",
+      [{providerId: this.state.provider},{date: date}]);
+      console.log(data);
+      if (data.error === undefined)
+       {
+         this.setState({ 
+          date: date,
+          slots: data
+        }); 
+       } else {
+         console.log(data.error);
+         this.setState({
+          popupShow: true
+        });
+       }
+     }
+     catch (err) {
+        console.log(err);
+        this.setState({
+          popupShow: true
+        });
+     }    
+   };
 
-  handleChangeslot = (val,field_name) => {
+  handleChangeSlot = async (e) => {
+    const slot = e.target.value;
     this.setState({ 
-        slot: val
+        slot: slot
     });  
   };
 
@@ -214,8 +237,8 @@ export default class CustomerDashboard extends Component {
   render() {
 
     let session_data = {
-      'service': this.state.serviceId,
-      'provider': this.state.providerId,
+      'service': this.state.service,
+      'provider': this.state.provider,
       'date': moment(new Date(this.state.date)).format("YYYY-MM-DD"),
       'slot': this.state.slot,
     }
@@ -223,8 +246,8 @@ export default class CustomerDashboard extends Component {
     const steps = [
       {name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} />},
       {name: 'StepTwo', component: <StepTwo provider={this.state.provider} providers={this.state.providers} handleChangeProvider={this.handleChangeProvider} />},
-      {name: 'StepThree', component: <StepThree date={this.state.date} handleChangeDate={this.handleChangeDate} />},
-      {name: 'StepFour', component: <StepFour slot={this.state.slot} handleChangeslot={this.handleChangeslot} />}
+      {name: 'StepThree', component: <StepThree date={this.state.date} dates={this.state.dates} handleChangeDate={this.handleChangeDate} />},
+      {name: 'StepFour', component: <StepFour slot={this.state.slot} slots={this.state.slots} handleChangeslot={this.handleChangeSlot} />}
     ];
 
     
