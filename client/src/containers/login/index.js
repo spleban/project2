@@ -33,15 +33,15 @@ export default class Login extends Component {
     
       if (data.error === undefined)
       {
-        localStorage.setItem(localStorageName,data[0]);
+        localStorage.setItem(localStorageName,JSON.stringify(data[0]));
         this.props.history.push(dashboard);
       } else {
-        alert(data.error);
+        console.log(data.error);
         this.props.history.push('/login');
       }  
          
     } catch (err) {
-        alert(err);
+        console.log(err);
         this.props.history.push('/login');
      }
   }
@@ -59,15 +59,10 @@ export default class Login extends Component {
   onClick(e,login_type) {
     e.preventDefault();
     if (this.validateForm()) {
-      console.log('Form data & login type:')
-      console.log(this.state.fields)
-      console.log(login_type)
       if(login_type == 'provider_login'){
         this.getData('/api/providerlogin','provider','/provider_dashboard',this.state.fields);
-        this.props.history.push('/provider_dashboard');
-      } else {
+        } else {
         this.getData('/api/customerlogin','customer','/customer_dashboard',this.state.fields);
-        this.props.history.push('/customer_dashboard');
       }
     }
   }

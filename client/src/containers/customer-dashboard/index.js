@@ -10,15 +10,11 @@ import axios from 'axios';
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 
-
 import StepOne from '../../components/stepper/StepOne'
 import StepTwo from '../../components/stepper/StepTwo'
 import StepThree from '../../components/stepper/StepThree'
 import StepFour from '../../components/stepper/StepFour'
 import MultiStep from 'react-multistep';
-
-
-
 
 export default class CustomerDashboard extends Component {
   
@@ -27,23 +23,24 @@ export default class CustomerDashboard extends Component {
 
    this.state = {
       popupShow: false,
-      data: {
-        service: '',
-        provider: '',
-        date_time: '',
-      },
-      service: '',  
-      provider: '',
+      
+      customerId: '',
+      serviceId: '',  
+      providerId: '',
       date: '',
-      time: '',
+      slot: '',
+      
       stepperError: '',
       services: [],
+      providers: [],
+      dates: [],
+      slots: [],
       sessionData: [
-        { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-        { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
-        { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
-        { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-        { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
+        { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', slot: ' ' }, 
+        { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', slot: ' ' },
+        { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', slot: ' ' },
+        { id: 4, provider: 'Thor ', service: 'god ', date: ' ', slot: ' ' },
+        { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', slot: ' ' },
       ]
 
    }
@@ -54,12 +51,13 @@ export default class CustomerDashboard extends Component {
    this.handleChangeService = this.handleChangeService.bind(this);
    this.handleChangeProvider = this.handleChangeProvider.bind(this);
    this.handleChangeDate = this.handleChangeDate.bind(this);
-   this.handleChangeTime = this.handleChangeTime.bind(this);
+   this.handleChangeslot = this.handleChangeslot.bind(this);
    this.sessionSave = this.sessionSave.bind(this);
      
   };
 
   componentDidMount() {
+    this.getSessions();
     this.getServices();
   }
 
@@ -68,49 +66,88 @@ export default class CustomerDashboard extends Component {
       const { data } = await axios.get("/api/getservices");
        if (data.error === undefined)
        {
-         console.log(data);
-        //  localStorage.setItem("services",data);
-        //  console.log(localStorage.getItem("services"));
-         this.setState({
+           this.setState({
            services: data
          });
        } else {
-         alert(data.error);
+         console.log(data.error);
          this.props.history.push('/customer_dashboard');
        }
      }
      catch (err) {
-        alert(err);
-        this.props.history.push('/customer_join');
+        console.log(err);
+        this.props.history.push('/customer_dashboard');
      } 
-    // let services = localStorage.getItem("services");
-    // console.log("raw", services)
-    // let parsedServices = JSON.parse(services)
-    // console.log("parsed", parsedServices)
-    // this.setState({ services: parsedServices });
-  }
+   }
+ 
   
+  async getSessions() {
+    try{
+      const customer = JSON.parse(localStorage.getItem("customer"));
+      const customerId = customer.id;
+      this.setState({
+        customerId: customerId
+      }); 
+      const { data } = await axios.post("/api/getcustomersessions",{customerId: customerId});
+       if (data.error === undefined)
+       {
+           this.setState({
+           sessionData: data
+         });
+       } else {
+         console.log(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+      catch (err) {
+         console.log(err);
+         this.props.history.push('/customer_dashboard');
+      } 
+    
+  }
+ 
+
+  async getProviders() {
+    try{
+      const serviceId = JSON.parse(localStorage.getItem("serviceId"));
+      const { data } = await axios.post("/api/getserviceproviders",{serviceId: serviceId});
+       if (data.error === undefined)
+       {
+           this.setState({
+           providers: data
+         });
+       } else {
+         console.log(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+      catch (err) {
+         console.log(err);
+         this.props.history.push('/customer_dashboard');
+      } 
+    
+  }
+ 
 
   handleChangeService = async (e) => {
     try{
       const { data } = await axios.post("/api/getserviceproviders",e.target.value);
        if (data.error === undefined)
        {
-         console.log(data);
-         localStorage.setItem("sessionProviders",data);
-         console.log(localStorage.getItem("serviceProviders"));
+         localStorage.setItem("sessionProviders",JSON.stringify(data));
+         console.log(JSON.parse(localStorage.getItem("serviceProviders")));
          this.setState({ 
-          service: e.target.value
+          serviceId: e.target.value
         }); 
        } else {
-         alert(data.error);
+         console.log(data.error);
          this.setState({
           popupShow: true
         });
        }
      }
      catch (err) {
-        alert(err);
+        console.log(err);
         this.setState({
           popupShow: true
         });
@@ -126,16 +163,14 @@ export default class CustomerDashboard extends Component {
   };
 
   handleChangeDate = (val,field_name) => {
-    // this.state.date=val
     this.setState({ 
         date: val
     });  
   };
 
-  handleChangeTime = (val,field_name) => {
-    // this.state.time=val
+  handleChangeslot = (val,field_name) => {
     this.setState({ 
-        time: val
+        slot: val
     });  
   };
 
@@ -145,25 +180,9 @@ export default class CustomerDashboard extends Component {
   
   popupOpen = async () => {
     console.log('in popup open');
-    // try{
-    //   const { data } = await axios.get("/api/getservices");
-    //    if (data.error === undefined)
-    //    {
-    //      console.log(data);
-    //      localStorage.setItem("services",data);
-    //      console.log(localStorage.getItem("services"));
-         this.setState({
+           this.setState({
            popupShow: true
          });
-    //    } else {
-    //      alert(data.error);
-    //      this.props.history.push('/customer_dashboard');
-    //    }
-    //  }
-    //  catch (err) {
-    //     alert(err);
-    //     this.props.history.push('/customer_join');
-    //  } 
   } 
 
   popupClose(){
@@ -172,7 +191,7 @@ export default class CustomerDashboard extends Component {
       service: '',  
       provider: '',
       date: '',
-      time: ''
+      slot: ''
     });
   } 
 
@@ -182,12 +201,12 @@ export default class CustomerDashboard extends Component {
     let service = this.state.service;
     let provider = this.state.provider;
     let date = moment(new Date(this.state.date)).format("YYYY-MM-DD");
-    let time = moment(new Date(this.state.time)).format("hh:mm a");
+    let slot = this.state.slot;
     console.log('New session data:')
     console.log(service)
     console.log(provider)
     console.log(date)
-    console.log(time)
+    console.log(slot)
     this.popupClose();
   }
   
@@ -195,27 +214,20 @@ export default class CustomerDashboard extends Component {
   render() {
 
     let session_data = {
-      'service': this.state.service,
-      'provider': this.state.provider,
+      'service': this.state.serviceId,
+      'provider': this.state.providerId,
       'date': moment(new Date(this.state.date)).format("YYYY-MM-DD"),
-      'time': moment(new Date(this.state.time)).format("hh:mm a")
+      'slot': this.state.slot,
     }
 
     const steps = [
       {name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} />},
-      {name: 'StepTwo', component: <StepTwo provider={this.state.provider} handleChangeProvider={this.handleChangeProvider} />},
+      {name: 'StepTwo', component: <StepTwo provider={this.state.provider} providers={this.state.providers} handleChangeProvider={this.handleChangeProvider} />},
       {name: 'StepThree', component: <StepThree date={this.state.date} handleChangeDate={this.handleChangeDate} />},
-      {name: 'StepFour', component: <StepFour time={this.state.time} handleChangeTime={this.handleChangeTime} />}
+      {name: 'StepFour', component: <StepFour slot={this.state.slot} handleChangeslot={this.handleChangeslot} />}
     ];
 
-    // const data = [
-    //   { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-    //   { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
-    //   { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
-    //   { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-    //   { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
-    // ];
-
+    
     const columns = [
       {
         name: 'Provider',
@@ -230,8 +242,8 @@ export default class CustomerDashboard extends Component {
         selector: 'date'
       },
       {
-        name: 'Time',
-        selector: 'time'
+        name: 'Slot',
+        selector: 'slot'
       },
       {
         name: 'Actions',
@@ -287,14 +299,14 @@ export default class CustomerDashboard extends Component {
                   <MultiStep steps={steps} />
                 </div>
                 <div className="stepper-btn">
-                  { ((this.state.service !=='') && (this.state.provider !=='') && (this.state.date !=='') && (this.state.time !=='')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
+                  { ((this.state.service !=='') && (this.state.provider !=='') && (this.state.date !=='') && (this.state.slot !=='')) ?  <button className="btn-common" onClick={this.sessionSave}>Save</button> : '' } 
                 </div>
                 { (this.state.service !=='') ?
                   <div className="stepper-data">
                     { (this.state.service !=='') ?  <span>Service: {session_data.service}</span> : '' } 
                     { (this.state.provider !=='') ?  <span>Provider: {session_data.provider}</span> : '' } 
                     { (this.state.date !=='') ?  <span>Date: {session_data.date}</span> : '' } 
-                    { (this.state.time !=='') ?  <span>Time: {session_data.time}</span> : '' } 
+                    { (this.state.slot !=='') ?  <span>Slot: {session_data.slot}</span> : '' } 
                   </div>
                 : ''
                 }
