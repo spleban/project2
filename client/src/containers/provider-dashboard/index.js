@@ -4,19 +4,56 @@ import DataTable from 'react-data-table-component';
 import './style.css';
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-
+import axios from 'axios';
 export default class ProviderDashboard extends Component {
   
   constructor() {
    super();
 
-   // this.state = {
+    this.state = {
+      sessionData: [
+        { id: 1, customer: "Batman ", date: " ", time: " " }, 
+        { id: 2, customer: "Spiderman ", date: " ", time: " " },
+        { id: 3, customer: "Ironman ", date: " ", time: " " },
+        { id: 4, customer: "Thor ", date: " ", time: " " },
+        { id: 5, customer: "Hulk ", date: " ", time: " " },
+      ]
       
-   // }
+    }
    
    this.back = this.back.bind(this);
    
   };
+
+  componentDidMount() {
+    this.getSessions();
+  }
+
+  async getSessions() {
+    try{
+      
+      const provider = JSON.parse(localStorage.getItem("provider"));
+      const providerId = provider.id;
+            
+      const { data } = await axios.post("/api/getprovidersessions",{providerId: providerId});
+       if (data.error === undefined)
+       {
+         console.log(data);
+           this.setState({
+           sessionData: data
+         });
+       } else {
+         console.log(data.error);
+         this.props.history.push('/provider_dashboard');
+       }
+     }
+      catch (err) {
+         console.log(err);
+         this.props.history.push('/provider_dashboard');
+      } 
+    
+  }
+ 
 
   back() {
     this.props.history.push('/login');
@@ -25,13 +62,7 @@ export default class ProviderDashboard extends Component {
   
 
   render() {
-    const data = [
-      { id: 1, customer: "Batman ", date: " ", time: " " }, 
-      { id: 2, customer: "Spiderman ", date: " ", time: " " },
-      { id: 3, customer: "Ironman ", date: " ", time: " " },
-      { id: 4, customer: "Thor ", date: " ", time: " " },
-      { id: 5, customer: "Hulk ", date: " ", time: " " },
-    ];
+    
     const columns = [
       {
         name: 'Customer',
@@ -54,6 +85,7 @@ export default class ProviderDashboard extends Component {
         </div>
       }
     ];
+
     return (
       <div className="App main-outercon">
         <div className="page-wrap solid-bg">
@@ -73,7 +105,7 @@ export default class ProviderDashboard extends Component {
                         </div>
                       </div>
                       <div className="dashboard-content">
-                        <DataTable columns={columns} data={data} />
+                        <DataTable columns={columns} data={this.state.sessionData} />
                       </div>
                     </div>
                   </div>

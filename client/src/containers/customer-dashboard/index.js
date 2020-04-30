@@ -10,15 +10,11 @@ import axios from 'axios';
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
 
-
 import StepOne from '../../components/stepper/StepOne'
 import StepTwo from '../../components/stepper/StepTwo'
 import StepThree from '../../components/stepper/StepThree'
 import StepFour from '../../components/stepper/StepFour'
 import MultiStep from 'react-multistep';
-
-
-
 
 export default class CustomerDashboard extends Component {
   
@@ -38,6 +34,7 @@ export default class CustomerDashboard extends Component {
       time: '',
       stepperError: '',
       services: [],
+      providers: [],
       sessionData: [
         { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
         { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
@@ -60,6 +57,7 @@ export default class CustomerDashboard extends Component {
   };
 
   componentDidMount() {
+    this.getSessions();
     this.getServices();
   }
 
@@ -69,27 +67,52 @@ export default class CustomerDashboard extends Component {
        if (data.error === undefined)
        {
          console.log(data);
-        //  localStorage.setItem("services",data);
-        //  console.log(localStorage.getItem("services"));
          this.setState({
            services: data
          });
        } else {
-         alert(data.error);
+         console.log(data.error);
          this.props.history.push('/customer_dashboard');
        }
      }
      catch (err) {
-        alert(err);
-        this.props.history.push('/customer_join');
+        console.log(err);
+        this.props.history.push('/customer_dashboard');
      } 
-    // let services = localStorage.getItem("services");
-    // console.log("raw", services)
-    // let parsedServices = JSON.parse(services)
-    // console.log("parsed", parsedServices)
-    // this.setState({ services: parsedServices });
+    
   }
+ 
   
+  async getSessions() {
+    try{
+      console.log('in getSessions');
+      console.log(localStorage.getItem("customer"));
+      console.log(JSON.stringify(localStorage.getItem("customer")));
+     
+      const customer = JSON.parse(localStorage.getItem("customer"));
+      const customerId = customer.id;
+      console.log(customer);
+      console.log(customerId);
+      
+      const { data } = await axios.post("/api/getcustomersessions",{customerId: customerId});
+       if (data.error === undefined)
+       {
+         console.log(data);
+           this.setState({
+           sessionData: data
+         });
+       } else {
+         console.log(data.error);
+         this.props.history.push('/customer_dashboard');
+       }
+     }
+      catch (err) {
+         console.log(err);
+         this.props.history.push('/customer_dashboard');
+      } 
+    
+  }
+ 
 
   handleChangeService = async (e) => {
     try{
@@ -103,14 +126,14 @@ export default class CustomerDashboard extends Component {
           service: e.target.value
         }); 
        } else {
-         alert(data.error);
+         console.log(data.error);
          this.setState({
           popupShow: true
         });
        }
      }
      catch (err) {
-        alert(err);
+        console.log(err);
         this.setState({
           popupShow: true
         });
@@ -145,25 +168,9 @@ export default class CustomerDashboard extends Component {
   
   popupOpen = async () => {
     console.log('in popup open');
-    // try{
-    //   const { data } = await axios.get("/api/getservices");
-    //    if (data.error === undefined)
-    //    {
-    //      console.log(data);
-    //      localStorage.setItem("services",data);
-    //      console.log(localStorage.getItem("services"));
-         this.setState({
+           this.setState({
            popupShow: true
          });
-    //    } else {
-    //      alert(data.error);
-    //      this.props.history.push('/customer_dashboard');
-    //    }
-    //  }
-    //  catch (err) {
-    //     alert(err);
-    //     this.props.history.push('/customer_join');
-    //  } 
   } 
 
   popupClose(){
@@ -208,14 +215,7 @@ export default class CustomerDashboard extends Component {
       {name: 'StepFour', component: <StepFour time={this.state.time} handleChangeTime={this.handleChangeTime} />}
     ];
 
-    // const data = [
-    //   { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', time: ' ' }, 
-    //   { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', time: ' ' },
-    //   { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', time: ' ' },
-    //   { id: 4, provider: 'Thor ', service: 'god ', date: ' ', time: ' ' },
-    //   { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', time: ' ' },
-    // ];
-
+    
     const columns = [
       {
         name: 'Provider',

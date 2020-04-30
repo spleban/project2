@@ -8,14 +8,7 @@ export default class StepOne extends Component {
    
   // };
 
-  populateServices() {
-    const options = localStorage.serviceOptions;
-    for (let i = 0; i < options.length; i++){
-
-    }
-
-  }
-
+ 
   renderOptions() {
     this.props.services.map(service => <option value={service.id}>{service.name}</option>)
   }
