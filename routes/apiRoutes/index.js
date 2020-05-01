@@ -26,4 +26,8 @@ router.route('/getservices')
   .get(controller.getServices);
 router.route('/getserviceproviders')
   .post(controller.getServiceProviders);
+router.route('/getproviderdates')
+  .post(controller.getProviderDates);
+router.route('/getproviderslots')
+  .post(controller.getProviderSlots);
 module.exports = router;

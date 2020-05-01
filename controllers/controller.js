@@ -1,6 +1,57 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable prefer-destructuring */
 const db = require('../config/connection');
 const queries = require('../models/Schedule/scheduleQueries');
+
+function dateToMoDaYear(d) {
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+function dateToYearMoDa(d) {
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  return `${year}-${month}-${day}`;
+}
+
+
+function addDays(date, days) {
+  const copy = new Date(Number(date));
+  copy.setDate(date.getDate() + days);
+  return copy;
+}
+
+
+function nextSevenDays() {
+  const today = new Date();
+  const dates = [];
+  for (let i = 1; i < 8; i++) {
+    const date = addDays(today, i);
+    dates.push({date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date)});
+  }
+  return dates;
+}
+
+const findProviderSlots = (currentSlots, allowedSlots) => {
+  const oSlots = [];
+  let available;
+  for (let i = 1; i <= allowedSlots; i++) {
+    for (let j = 0; j < currentSlots.length; j++) {
+      available = true;
+      if (i === currentSlots[j]) {
+        available = false;
+        break;
+      }
+    }
+    if (available) {
+      oSlots.push(i);
+    }
+  }
+  return oSlots;
+};
 
 
 const findCustomerSessions = async (customerId) => {
@@ -37,29 +88,6 @@ const findProviderByEmail = async (email) => {
   return providerId;
 };
 
-// const findProviderIdByNameAndEmail = async (name, email) => {
-//   const providerIds = await db.query(queries.getProviderByNameAndEmail, [name, email]);
-//   let providerId = 0;
-//   if (providerIds.length.length > 0) {
-//     providerId = providerIds[0].id;
-//   }
-//   return providerId;
-// };
-
-function addDays(date, days) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
-}
-
-function nextSevenDays() {
-  const today = new Date().toLocaleDateString();
-  const dates = [];
-  for (let i = 1; i < 8; i += 1) {
-    dates.push(addDays(today, i));
-  }
-  return dates;
-}
 
 const findCustomerId = async (email) => {
   const data = await db.query(queries.getCustomerByEmail, [email]);
@@ -74,7 +102,24 @@ const findCustomerId = async (email) => {
 
 module.exports = {
 
-  defineNextSevenDates: () => nextSevenDays(),
+  getProviderDates: async (req, res) => {
+    const { providerId } = req.body;
+    const dates = nextSevenDays();
+    console.log(dates);
+    return res.json(dates);
+  },
+
+  getProviderSlots: async (req, res) => {
+    try {
+      const { providerId, date } = req.body;
+      const slots = await db.query(queries.getProviderSlots, [providerId, date]);
+      const providerSlot = await db.query(queries.getProviderSlot,[providerId]);
+      slots = findProviderSlots(slots,providerSlot);
+      res.json(slots);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
 
   saveCustomer: async (req, res) => {
     try {
@@ -106,7 +151,7 @@ module.exports = {
         await db.query(queries.insertProvider,
           [name, email, serviceId, parseInt(slots, 10)]); //
         provider = await db.query(queries.getProviderDataByEmail, [email]);
-       } else {
+      } else {
         throw new Error(`email: ${email} is already used by another provider, choose a different email.`);
       }
       res.json(provider);

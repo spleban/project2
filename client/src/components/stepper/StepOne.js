@@ -6,9 +6,10 @@ export default class StepOne extends Component {
     return (
       <div className="form-blk">
         <div className="form-row">
-          <label>Select service:</label>
+          <label>Select Service:</label>
           <select name="service" value={this.props.service} onChange={this.props.handleChangeService} >
-          {this.props.services.map(service => <option value={service.id}>{service.name}</option>)}
+          <option value="">Service</option>
+            {this.props.services.map(service => <option value={service.id}>{service.name}</option>)}
           </select>
         </div>
       </div>
