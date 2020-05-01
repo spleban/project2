@@ -10,10 +10,18 @@ function dateToMoDaYear(d) {
   return `${month}/${day}/${year}`;
 }
 
+function dateToYearMoDa(d) {
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  return `${year}-${month}-${day}`;
+}
+
+
 function addDays(date, days) {
   const copy = new Date(Number(date));
   copy.setDate(date.getDate() + days);
-  return dateToMoDaYear(copy);
+  return copy;
 }
 
 
@@ -21,7 +29,8 @@ function nextSevenDays() {
   const today = new Date();
   const dates = [];
   for (let i = 1; i < 8; i++) {
-    dates.push(addDays(today, i));
+    const date = addDays(today, i);
+    dates.push({date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date)});
   }
   return dates;
 }
@@ -93,7 +102,24 @@ const findCustomerId = async (email) => {
 
 module.exports = {
 
-  defineNextSevenDates: () => nextSevenDays(),
+  getProviderDates: async (req, res) => {
+    const { providerId } = req.body;
+    const dates = nextSevenDays();
+    console.log(dates);
+    return res.json(dates);
+  },
+
+  getProviderSlots: async (req, res) => {
+    try {
+      const { providerId, date } = req.body;
+      const slots = await db.query(queries.getProviderSlots, [providerId, date]);
+      const providerSlot = await db.query(queries.getProviderSlot,[providerId]);
+      slots = findProviderSlots(slots,providerSlot);
+      res.json(slots);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
 
   saveCustomer: async (req, res) => {
     try {

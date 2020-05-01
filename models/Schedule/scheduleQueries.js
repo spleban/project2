@@ -13,7 +13,8 @@ const deleteSession = 'DELETE FROM session WHERE id=?';
 const getServices = 'SELECT id, name FROM service';
 const getServiceProviders = 'SELECT id, name FROM provider WHERE service_id=?';
 const getDates = 'SELECT date FROM session WHERE provider_id=? AND (date BETWEEN ? AND ?)';
-const getSlots = 'SELECT slot FROM session WHERE date=?';
+const getSlots = 'SELECT slot FROM session WHERE provider_id=? AND date=?';
+const getProviderSlot = 'SELECT slot FROM provider WHERE provider_id=?';
 const SessionTabelByName = 'SELECT session.id, customer.name AS customer, provider.name AS provider,'
 + ' service.name AS service, session.date, session.slot FROM session '
 + ' JOIN customer ON session.customer_id=customer.id '
@@ -41,4 +42,5 @@ module.exports = {
   getServiceProviders,
   getDates,
   getSlots,
+  getProviderSlot,
 };

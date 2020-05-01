@@ -31,8 +31,8 @@ render() {
       <div className="form-row">
         <label>Select Service Date:</label>
         <select name="date" value={this.props.date} onChange={this.props.handleChangeDate} >
-          <option value="">Select date</option>
-          {this.props.dates.map(d => <option value={d.date}>{d.date}</option>)}
+          <option value="">Date</option>
+          {this.props.dates.map(d => <option value={d.date}>{d.dateDisplay}</option>)}
          </select>
       </div>
     </div>
