@@ -22,6 +22,7 @@ const SessionTabelByName = 'SELECT session.id, customer.name AS customer, provid
 + ' JOIN service ON session.service_id=service.id ';
 const getCustomerSessions = `${SessionTabelByName}WHERE session.customer_id=?`;
 const getProviderSessions = `${SessionTabelByName}WHERE session.provider_id=?`;
+const getSessionCustomerId = 'SELECT id FROM session WHERE session_id=?';
 
 module.exports = {
   insertProvider,
@@ -43,4 +44,5 @@ module.exports = {
   getDates,
   getSlots,
   getProviderSlot,
+  getSessionCustomerId,
 };

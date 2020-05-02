@@ -30,7 +30,7 @@ function nextSevenDays() {
   const dates = [];
   for (let i = 1; i < 8; i++) {
     const date = addDays(today, i);
-    dates.push({date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date)});
+    dates.push({ date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date) });
   }
   return dates;
 }
@@ -105,7 +105,8 @@ module.exports = {
   getProviderDates: async (req, res) => {
     const { providerId } = req.body;
     const dates = nextSevenDays();
-    console.log(dates);
+    // console.log(providerId);
+    // console.log(dates);
     return res.json(dates);
   },
 
@@ -113,9 +114,9 @@ module.exports = {
     try {
       const { providerId, date } = req.body;
       const slots = await db.query(queries.getProviderSlots, [providerId, date]);
-      const providerSlot = await db.query(queries.getProviderSlot,[providerId]);
-      slots = findProviderSlots(slots,providerSlot);
-      res.json(slots);
+      const providerSlot = await db.query(queries.getProviderSlot, [providerId]);
+      const slots1 = findProviderSlots(slots, providerSlot);
+      res.json(slots1);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -246,10 +247,27 @@ module.exports = {
   },
 
 
+  // deleteCustomerSession: async (req, res) => {
+  //   try {
+  //     console.log(req.body);
+  //     const { sessionId } = req.body;
+  //     console.log(`session id: '${sessionId}`);
+  //     const customerId = await db.query(queries.getSessionCustomerId, parseInt(sessionId, 10));
+  //     console.log(`customer id: '${customerId}`);
+  //     const a = await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
+  //     console.log(`delete result: '${a}`);
+  //     const sessions = await findCustomerSessions(customerId);
+  //     console.log(`sessions: '${sessions}`);
+  //     res.json(sessions);
+  //   } catch (err) {
+  //     res.json({ error: err.message });
+  //   }
+  // },
+
   deleteSession: async (req, res) => {
     try {
       const { sessionId } = req.body;
-      await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
+      const dres = await db.query(queries.deleteSession, parseInt(sessionId, 10));
       res.json({ success: true });
     } catch (err) {
       res.json({ error: err.message });

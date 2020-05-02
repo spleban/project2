@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
-const controller = require('../../controllers/controller');
-// /api/schedule prepended to every route
+const controller = require('../../controllers');
+// /api prepended to every route
 
 
 router.route('/getcustomersessions')
@@ -30,4 +30,7 @@ router.route('/getproviderdates')
   .post(controller.getProviderDates);
 router.route('/getproviderslots')
   .post(controller.getProviderSlots);
+router.route('/deletesession')
+  .delete(controller.deleteSession);
+
 module.exports = router;

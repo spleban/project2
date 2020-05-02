@@ -53,7 +53,7 @@ export default class CustomerDashboard extends Component {
    this.handleChangeDate = this.handleChangeDate.bind(this);
    this.handleChangeSlot = this.handleChangeSlot.bind(this);
    this.sessionSave = this.sessionSave.bind(this);
-     
+   this.handleDeleteClick = this.handleDeleteClick.bind(this);
   };
 
   componentDidMount() {
@@ -234,8 +234,19 @@ export default class CustomerDashboard extends Component {
   }
   
 
-  render() {
+  handleDeleteClick = async data => {
+    try {
+      console.log(`sessionId ${data.id}`);
+      const res = await axios.delete('/api/deletesession', { data: { sessionId : data.id}});
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+    this.getSessions();
+  }
+  
 
+  render() {
     let session_data = {
       'service': this.state.service,
       'provider': this.state.provider,
@@ -271,12 +282,19 @@ export default class CustomerDashboard extends Component {
       {
         name: 'Actions',
         center: true,
-        cell: row => 
-        <div className="table-btn">
-          <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
-        </div>
+        cell: row => {
+          return (
+            <div className="table-btn" onClick={ () => this.handleDeleteClick(row)}>
+            <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
+          </div>
+          )
+        }
       }
     ];
+    
+    
+
+
     return (
       <>
       <div className="App main-outercon">
