@@ -247,23 +247,6 @@ module.exports = {
   },
 
 
-  // deleteCustomerSession: async (req, res) => {
-  //   try {
-  //     console.log(req.body);
-  //     const { sessionId } = req.body;
-  //     console.log(`session id: '${sessionId}`);
-  //     const customerId = await db.query(queries.getSessionCustomerId, parseInt(sessionId, 10));
-  //     console.log(`customer id: '${customerId}`);
-  //     const a = await db.query(queries.deleteSessionById, parseInt(sessionId, 10));
-  //     console.log(`delete result: '${a}`);
-  //     const sessions = await findCustomerSessions(customerId);
-  //     console.log(`sessions: '${sessions}`);
-  //     res.json(sessions);
-  //   } catch (err) {
-  //     res.json({ error: err.message });
-  //   }
-  // },
-
   deleteSession: async (req, res) => {
     try {
       const { sessionId } = req.body;

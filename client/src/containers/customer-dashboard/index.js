@@ -218,7 +218,6 @@ export default class CustomerDashboard extends Component {
     });
   } 
 
-
   sessionSave(e){
     e.preventDefault();
     let service = this.state.service;
