@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import './style.css';
 import Header from '../../components/header/index.js';
@@ -12,11 +11,7 @@ export default class ProviderDashboard extends Component {
 
     this.state = {
       sessionData: [
-        { id: 1, customer: "Batman ", date: " ", time: " " }, 
-        { id: 2, customer: "Spiderman ", date: " ", time: " " },
-        { id: 3, customer: "Ironman ", date: " ", time: " " },
-        { id: 4, customer: "Thor ", date: " ", time: " " },
-        { id: 5, customer: "Hulk ", date: " ", time: " " },
+        { id: 0, customer: "Customer ", date: "Date ", slot: "Slot " }, 
       ]
       
     }

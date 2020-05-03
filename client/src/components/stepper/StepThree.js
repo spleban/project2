@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-//import { NavLink,Link } from "react-router-dom";
-import DatePicker from "react-datepicker";
+//import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import subDays from "date-fns/subDays";
 
@@ -32,7 +31,7 @@ render() {
         <label>Select Service Date:</label>
         <select name="date" value={this.props.date} onChange={this.props.handleChangeDate} >
           <option value="">Date</option>
-          {this.props.dates.map(d => <option value={d.date}>{d.dateDisplay}</option>)}
+          {this.props.dates.map((d , idx) => <option key={idx} value={d.date}>{d.dateDisplay}</option>)}
          </select>
       </div>
     </div>

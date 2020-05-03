@@ -40,7 +40,7 @@ render() {
         <label>Select Slot:</label>
         <option value="">Select slot</option>
         <select name="slot" value={this.props.slot} onChange={this.props.handleChangeSlot} >
-          {this.props.slots.map(slot => <option value={slot.slot}>{slot.slot}</option>)}
+          {this.props.slots.map((slot , idx) => <option key={idx} value={slot.slot}>{slot.slot}</option>)}
         </select>
       </div>
     </div>

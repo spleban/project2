@@ -7,14 +7,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import './style.css';
 import moment from 'moment';
 import axios from 'axios';
+import MultiStep from 'react-multistep';
+
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-
 import StepOne from '../../components/stepper/StepOne'
 import StepTwo from '../../components/stepper/StepTwo'
 import StepThree from '../../components/stepper/StepThree'
 import StepFour from '../../components/stepper/StepFour'
-import MultiStep from 'react-multistep';
+
 
 export default class CustomerDashboard extends Component {
   
@@ -29,18 +30,13 @@ export default class CustomerDashboard extends Component {
       provider: '',
       date: '',
       slot: '',
-      
       stepperError: '',
       services: [],
       providers: [],
       dates: [],
       slots: [],
       sessionData: [
-        { id: 1, provider: 'Batman ', service: 'utility belt ', date: ' ', slot: ' ' }, 
-        { id: 2, provider: 'Spiderman', service: 'spider webs ', date: ' ', slot: ' ' },
-        { id: 3, provider: 'Ironman ', service: 'weapons ', date: ' ', slot: ' ' },
-        { id: 4, provider: 'Thor ', service: 'god ', date: ' ', slot: ' ' },
-        { id: 5, provider: 'Hulk ', service: 'smashing ', date: ' ', slot: ' ' },
+        { id: 0, provider: 'Provider ', service: 'Service ', date: 'Date ', slot: 'Slot ' }
       ]
 
    }
@@ -66,7 +62,7 @@ export default class CustomerDashboard extends Component {
       const { data } = await axios.get("/api/getservices");
        if (data.error === undefined)
        {
-           this.setState({
+          this.setState({
            services: data
          });
        } else {
@@ -109,12 +105,10 @@ export default class CustomerDashboard extends Component {
   handleChangeService = async (e) => {
     try{
       const service = e.target.value;
-      console.log(e.target.value);
       const { data } = await axios.post("/api/getserviceproviders",{serviceId:service});
-      console.log(data);
       if (data.error === undefined)
        {
-         this.setState({ 
+          this.setState({ 
           service: service,
           providers: data
         }); 
@@ -130,17 +124,13 @@ export default class CustomerDashboard extends Component {
         this.setState({
           popupShow: true
         });
-     } 
-  
-     
+     }     
   };
 
   handleChangeProvider = async (e) => {
     try{
       const provider = e.target.value;
-      console.log(e.target.value);
       const { data } = await axios.post("/api/getproviderdates",{providerId:provider});
-      console.log(data);
       if (data.error === undefined)
        {
          this.setState({ 
@@ -165,10 +155,8 @@ export default class CustomerDashboard extends Component {
   handleChangeDate = async (e) => {
     try{
       const date = e.target.value;
-      console.log(e.target.value);
       const { data } = await axios.post("/api/getproviderslots",
-      [{providerId: this.state.provider},{date: date}]);
-      console.log(data);
+      {providerId: this.state.provider, date: date});
       if (data.error === undefined)
        {
          this.setState({ 
@@ -191,18 +179,25 @@ export default class CustomerDashboard extends Component {
    };
 
   handleChangeSlot = async (e) => {
-    const slot = e.target.value;
-    this.setState({ 
-        slot: slot
-    });  
-  };
+    try{
+      const slot = e.target.value;
+      const { data } = await axios.post("/api/savesession",
+      [{customerId : this.customer},
+        {providerId : this.provider},
+        {serviceId : this.service},
+        {date : this.date},
+        {slot : slot} ]);
+    } catch (err) {
+    console.log(err);
+  }
+  this.getSessions();
+  }
 
   back() {
     this.props.history.push('/login');
   }
   
   popupOpen = async () => {
-    console.log('in popup open');
            this.setState({
            popupShow: true
          });
@@ -257,7 +252,7 @@ export default class CustomerDashboard extends Component {
       {name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} />},
       {name: 'StepTwo', component: <StepTwo provider={this.state.provider} providers={this.state.providers} handleChangeProvider={this.handleChangeProvider} />},
       {name: 'StepThree', component: <StepThree date={this.state.date} dates={this.state.dates} handleChangeDate={this.handleChangeDate} />},
-      {name: 'StepFour', component: <StepFour slot={this.state.slot} slots={this.state.slots} handleChangeslot={this.handleChangeSlot} />}
+      {name: 'StepFour', component: <StepFour slot={this.state.slot} slots={this.state.slots} handleChangeSlot={this.handleChangeSlot} />}
     ];
 
     
@@ -291,9 +286,6 @@ export default class CustomerDashboard extends Component {
       }
     ];
     
-    
-
-
     return (
       <>
       <div className="App main-outercon">
@@ -307,7 +299,7 @@ export default class CustomerDashboard extends Component {
                     <div className="dashboard-wrap">
                       <div className="dashboard-head">
                         <div className="dashboard-left">
-                          <h4>My Schedules</h4>
+                          <h4>My Sessions</h4>
                         </div>
                         <div className="dashboard-right">
                            <button className="btn-common" onClick={this.popupOpen}>New Session</button>

@@ -10,6 +10,8 @@ router.route('/getprovidersessions')
   .post(controller.getProviderSessions);
 router.route('/savecustomer')
   .post(controller.saveCustomer);
+router.route('/savesession')
+  .post(controller.saveSession);
 router.route('/saveprovider')
   .post(controller.saveProvider);
 router.route('/saveservice')

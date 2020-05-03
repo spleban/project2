@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-import { NavLink,Link } from 'react-router-dom';
 import './style.css';
 import Axios from 'axios';
-
-
 import Header from '../../components/header/index.js';
 import Footer from '../../components/footer/index.js';
-
 
 export default class Login extends Component {
   

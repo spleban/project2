@@ -1,18 +1,24 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable prefer-destructuring */
 const db = require('../config/connection');
-const queries = require('../models/Schedule/scheduleQueries');
+const queries = require('../models/Schedule');
+
+function padLeadingZeros(num, size) {
+  let s = `${num}`;
+  while (s.length < size) s = `0${s}`;
+  return s;
+}
 
 function dateToMoDaYear(d) {
-  const day = d.getDate();
-  const month = d.getMonth() + 1;
+  const day = padLeadingZeros(d.getDate(), 2);
+  const month = padLeadingZeros(d.getMonth() + 1, 2);
   const year = d.getFullYear();
   return `${month}/${day}/${year}`;
 }
 
 function dateToYearMoDa(d) {
-  const day = d.getDate();
-  const month = d.getMonth() + 1;
+  const day = padLeadingZeros(d.getDate(), 2);
+  const month = padLeadingZeros(d.getMonth() + 1, 2);
   const year = d.getFullYear();
   return `${year}-${month}-${day}`;
 }
@@ -35,10 +41,12 @@ function nextSevenDays() {
   return dates;
 }
 
-const findProviderSlots = (currentSlots, allowedSlots) => {
+const findProviderSlots = (currentSlots, slotsPerDay) => {
   const oSlots = [];
+  console.log(`currentSlots: ${currentSlots}`);
+  console.log(`slotsPerDay: ${slotsPerDay}`);
   let available;
-  for (let i = 1; i <= allowedSlots; i++) {
+  for (let i = 1; i <= slotsPerDay; i++) {
     for (let j = 0; j < currentSlots.length; j++) {
       available = true;
       if (i === currentSlots[j]) {
@@ -59,6 +67,16 @@ const findCustomerSessions = async (customerId) => {
     parseInt(customerId, 10));
   return (customerSessions);
 };
+
+const findProviderDailySlots = async (providerId) => {
+  const res = await db.query(queries.getProviderDailySlots, [providerId]);
+  let slotsPerDay = 0;
+  if (res.length > 0) {
+    slotsPerDay = res[0];
+  }
+  return slotsPerDay;
+};
+
 
 const findServiceId = async (name) => {
   const serviceIds = await db.query(queries.getServiceByName, name);
@@ -105,18 +123,24 @@ module.exports = {
   getProviderDates: async (req, res) => {
     const { providerId } = req.body;
     const dates = nextSevenDays();
-    // console.log(providerId);
-    // console.log(dates);
     return res.json(dates);
   },
 
   getProviderSlots: async (req, res) => {
     try {
       const { providerId, date } = req.body;
-      const slots = await db.query(queries.getProviderSlots, [providerId, date]);
-      const providerSlot = await db.query(queries.getProviderSlot, [providerId]);
-      const slots1 = findProviderSlots(slots, providerSlot);
-      res.json(slots1);
+      console.log(`providerId: ${providerId}`);
+      console.log(`date: ${date}`);
+      // use moments
+      // let newDate = moment(data).format("YYYY-MM-DD");
+   
+      const scheduledSlots = await db.query(queries.getProviderSlotsByDate, [providerId, date]);
+      console.log(`scheduledSlots: ${scheduledSlots}`);
+      const providerSlotsPerDay = await findProviderDailySlots(providerId);
+      console.log(`providerSlotsPerDay: ${providerSlotsPerDay.daily_slots}`);
+      const availableSlots = findProviderSlots(scheduledSlots, providerSlotsPerDay);
+      console.log(`availableSlots: ${availableSlots}`);
+      res.json(availableSlots);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -130,7 +154,6 @@ module.exports = {
       if (customerId === 0) {
         await db.query(queries.insertCustomer, [name, email]);
         customer = await db.query(queries.getCustomerDataByEmail, [email]);
-        // customerId = JSON.parse(JSON.stringify(response[0])).id;
       } else {
         throw new Error(`email: ${email} is already used by another customer, choose a different email.`);
       }
@@ -219,6 +242,7 @@ module.exports = {
   getServiceProviders: async (req, res) => {
     try {
       const { serviceId } = req.body;
+      console.log(JSON.stringify(req.body));
       const providers = await db.query(queries.getServiceProviders, parseInt(serviceId, 10));
       res.json(providers);
     } catch (err) {
@@ -231,6 +255,19 @@ module.exports = {
       const { name } = req.body;
       const serviceId = await findOrCreateServiceId(name);
       res.json(serviceId);
+    } catch (err) {
+      res.json({ error: err.message });
+    }
+  },
+
+  saveSession: async (req, res) => {
+    try {
+      const {
+        customerId, providerId, serviceId, date, slot,
+      } = req.body;
+      const session = await db.query(queries.insertSession,
+        [customerId, providerId, serviceId, date, slot]);
+      res.json(session);
     } catch (err) {
       res.json({ error: err.message });
     }
@@ -250,7 +287,7 @@ module.exports = {
   deleteSession: async (req, res) => {
     try {
       const { sessionId } = req.body;
-      const dres = await db.query(queries.deleteSession, parseInt(sessionId, 10));
+      await db.query(queries.deleteSession, parseInt(sessionId, 10));
       res.json({ success: true });
     } catch (err) {
       res.json({ error: err.message });
