@@ -40,8 +40,6 @@ export default class CustomerJoin extends Component {
     if (this.validateForm()) {
       try {
        const { data } = await axios.post("/api/savecustomer", this.state.fields)
-       console.log(data);
-       console.log(data.error);
        if (data.error === undefined)
        {
             localStorage.setItem("customer",data[0]);

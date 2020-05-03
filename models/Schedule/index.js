@@ -14,7 +14,7 @@ const getServices = 'SELECT id, name FROM service';
 const getServiceProviders = 'SELECT id, name FROM provider WHERE service_id=?';
 const getDates = 'SELECT date FROM session WHERE provider_id=? AND (date BETWEEN ? AND ?)';
 const getSlots = 'SELECT slot FROM session WHERE provider_id=? AND date=?';
-const getProviderSlot = 'SELECT slot FROM provider WHERE provider_id=?';
+const getProviderDailySlots = 'SELECT daily_slots FROM provider WHERE id=?';
 const SessionTabelByName = 'SELECT session.id, customer.name AS customer, provider.name AS provider,'
 + ' service.name AS service, session.date, session.slot FROM session '
 + ' JOIN customer ON session.customer_id=customer.id '
@@ -22,6 +22,8 @@ const SessionTabelByName = 'SELECT session.id, customer.name AS customer, provid
 + ' JOIN service ON session.service_id=service.id ';
 const getCustomerSessions = `${SessionTabelByName}WHERE session.customer_id=?`;
 const getProviderSessions = `${SessionTabelByName}WHERE session.provider_id=?`;
+const getSessionCustomerId = 'SELECT id FROM session WHERE session_id=?';
+const getProviderSlotsByDate = 'SELECT slot FROM session WHERE provider_id=? AND date=?';
 
 module.exports = {
   insertProvider,
@@ -42,5 +44,7 @@ module.exports = {
   getServiceProviders,
   getDates,
   getSlots,
-  getProviderSlot,
+  getProviderDailySlots,
+  getSessionCustomerId,
+  getProviderSlotsByDate,
 };

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import { Link } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import './style.css';
 import Header from '../../components/header/index.js';
@@ -12,17 +11,14 @@ export default class ProviderDashboard extends Component {
 
     this.state = {
       sessionData: [
-        { id: 1, customer: "Batman ", date: " ", time: " " }, 
-        { id: 2, customer: "Spiderman ", date: " ", time: " " },
-        { id: 3, customer: "Ironman ", date: " ", time: " " },
-        { id: 4, customer: "Thor ", date: " ", time: " " },
-        { id: 5, customer: "Hulk ", date: " ", time: " " },
+        { id: 0, customer: "Customer ", date: "Date ", slot: "Slot " }, 
       ]
       
     }
    
    this.back = this.back.bind(this);
-   
+   this.handleDeleteClick = this.handleDeleteClick.bind(this);
+
   };
 
   componentDidMount() {
@@ -31,10 +27,8 @@ export default class ProviderDashboard extends Component {
 
   async getSessions() {
     try{
-      
       const provider = JSON.parse(localStorage.getItem("provider"));
-      const providerId = provider.id;
-            
+      const providerId = provider.id; 
       const { data } = await axios.post("/api/getprovidersessions",{providerId: providerId});
        if (data.error === undefined)
        {
@@ -50,14 +44,22 @@ export default class ProviderDashboard extends Component {
          console.log(err);
          this.props.history.push('/provider_dashboard');
       } 
-    
   }
  
-
   back() {
     this.props.history.push('/login');
   }
   
+  handleDeleteClick = async data => {
+    try {
+      console.log(`sessionId ${data.id}`);
+      const res = await axios.delete('/api/deletesession', { data: { sessionId : data.id}});
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+    this.getSessions();
+  }
   
 
   render() {
@@ -78,10 +80,13 @@ export default class ProviderDashboard extends Component {
       {
         name: 'Actions',
         center: true,
-        cell: row => 
-        <div className="table-btn">
-          <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
-        </div>
+        cell: row => {
+          return (
+            <div className="table-btn" onClick={ () => this.handleDeleteClick(row)}>
+            <a href="#"><i className="fa fa-trash-o" aria-hidden="true"></i></a>
+          </div>
+          )
+        }
       }
     ];
 
