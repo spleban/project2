@@ -7,28 +7,28 @@ function padLeadingZeros(num, size) {
   let s = `${num}`;
   while (s.length < size) s = `0${s}`;
   return s;
-}
+};
 
 function dateToMoDaYear(d) {
   const day = padLeadingZeros(d.getDate(), 2);
   const month = padLeadingZeros(d.getMonth() + 1, 2);
   const year = d.getFullYear();
   return `${month}/${day}/${year}`;
-}
+};
 
 function dateToYearMoDa(d) {
   const day = padLeadingZeros(d.getDate(), 2);
   const month = padLeadingZeros(d.getMonth() + 1, 2);
   const year = d.getFullYear();
   return `${year}-${month}-${day}`;
-}
+};
 
 
 function addDays(date, days) {
   const copy = new Date(Number(date));
   copy.setDate(date.getDate() + days);
   return copy;
-}
+};
 
 
 function nextSevenDays() {
@@ -39,23 +39,38 @@ function nextSevenDays() {
     dates.push({ date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date) });
   }
   return dates;
-}
+};
 
-const findProviderSlots = (currentSlots, slotsPerDay) => {
+function findProviderDates (sessions, slotsPerDay, numberOfDays) {
+  const dFirst = new Date();
+  const dates = [];
+  let dDate = dFirst;
+  for (let i = 0; i < numberOfDays; i++) {
+    const currentDate = dateToYearMoDa(dDate);
+    const dailySessions = sessions.filter(session => session.date === currentDate);
+     if (dailySessions.length < slotsPerDay) {
+      dates.push({date: currentDate, dateDisplay: dateToMoDaYear(dDate)});
+    }
+    dDate = addDays(dDate, 1);
+  }
+  return dates;
+};
+
+function findProviderSlots (currentSlots, slotsPerDay) {
   const oSlots = [];
-  console.log(`currentSlots: ${currentSlots}`);
+  console.log(`currentSlots: ${currentSlots.length}`);
   console.log(`slotsPerDay: ${slotsPerDay}`);
-  let available;
+ 
   for (let i = 1; i <= slotsPerDay; i++) {
+    let available = true;
     for (let j = 0; j < currentSlots.length; j++) {
-      available = true;
-      if (i === currentSlots[j]) {
+        if (i === currentSlots[j]) {
         available = false;
         break;
       }
     }
     if (available) {
-      oSlots.push(i);
+      oSlots.push({slot: i});
     }
   }
   return oSlots;
@@ -120,26 +135,21 @@ const findCustomerId = async (email) => {
 
 module.exports = {
 
+  
   getProviderDates: async (req, res) => {
     const { providerId } = req.body;
-    const dates = nextSevenDays();
+    const sessions = await db.query(queries.getProviderSessions, [providerId]);
+    const slotsPerDay = await findProviderDailySlots(providerId);
+    const dates = findProviderDates (sessions, slotsPerDay.daily_slots, 7);
     return res.json(dates);
   },
 
   getProviderSlots: async (req, res) => {
     try {
       const { providerId, date } = req.body;
-      console.log(`providerId: ${providerId}`);
-      console.log(`date: ${date}`);
-      // use moments
-      // let newDate = moment(data).format("YYYY-MM-DD");
-   
       const scheduledSlots = await db.query(queries.getProviderSlotsByDate, [providerId, date]);
-      console.log(`scheduledSlots: ${scheduledSlots}`);
-      const providerSlotsPerDay = await findProviderDailySlots(providerId);
-      console.log(`providerSlotsPerDay: ${providerSlotsPerDay.daily_slots}`);
-      const availableSlots = findProviderSlots(scheduledSlots, providerSlotsPerDay);
-      console.log(`availableSlots: ${availableSlots}`);
+      const slotsPerDay = await findProviderDailySlots(providerId);
+      const availableSlots = findProviderSlots(scheduledSlots, slotsPerDay.daily_slots);
       res.json(availableSlots);
     } catch (err) {
       res.json({ error: err.message });
@@ -265,7 +275,7 @@ module.exports = {
       const {
         customerId, providerId, serviceId, date, slot,
       } = req.body;
-      const session = await db.query(queries.insertSession,
+       const session = await db.query(queries.insertSession,
         [customerId, providerId, serviceId, date, slot]);
       res.json(session);
     } catch (err) {
