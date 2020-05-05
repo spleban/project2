@@ -1,0 +1,28 @@
+.contact-form{
+	float: left;
+	width: 100%;
+}
+.contact-page .form-row.btn-blk{
+	justify-content: center;
+}
+.contact-page .page-head p{
+	text-align: center;
+}
+
+/*----------------------- Media queries --------------------------*/
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  
+}
+
+@media only screen and (max-width: 767px) {
+  
+}
+
+@media only screen and (max-width: 479px) {
+  
+}
