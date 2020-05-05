@@ -32,12 +32,12 @@ export default class Login extends Component {
         localStorage.setItem(localStorageName,JSON.stringify(data[0]));
         this.props.history.push(dashboard);
       } else {
-        console.log(data.error);
+        alert(data.error);
         this.props.history.push('/login');
       }  
          
     } catch (err) {
-        console.log(err);
+        alert(err);
         this.props.history.push('/login');
      }
   }
@@ -100,7 +100,7 @@ export default class Login extends Component {
                     <div className='left-blk'>
                         <div className='page-head'>
                           <h3>Login to Awesome Scheduling</h3>
-                          <p>Please enter your Full Name and Email. Thanks.</p>
+                          <p>Please enter your Full Name and Email.</p>
                         </div>
                         <div className='form-blk'>
                           <form>
