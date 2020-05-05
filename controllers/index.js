@@ -38,15 +38,15 @@ function addDays(date, days) {
 }
 
 
-function nextSevenDays() {
-  const today = new Date();
-  const dates = [];
-  for (let i = 1; i < 8; i++) {
-    const date = addDays(today, i);
-    dates.push({ date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date) });
-  }
-  return dates;
-}
+// function nextSevenDays() {
+//   const today = new Date();
+//   const dates = [];
+//   for (let i = 1; i < 8; i++) {
+//     const date = addDays(today, i);
+//     dates.push({ date: dateToYearMoDa(date), dateDisplay: dateToMoDaYear(date) });
+//   }
+//   return dates;
+// }
 
 function findProviderDates(sessions, slotsPerDay, numberOfDays) {
   const dFirst = new Date();
@@ -258,7 +258,6 @@ module.exports = {
   getServiceProviders: async (req, res) => {
     try {
       const { serviceId } = req.body;
-      console.log(JSON.stringify(req.body));
       const providers = await db.query(queries.getServiceProviders, parseInt(serviceId, 10));
       res.json(providers);
     } catch (err) {
