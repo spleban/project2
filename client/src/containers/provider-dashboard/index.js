@@ -74,7 +74,7 @@ export default class ProviderDashboard extends Component {
         selector: 'date'
       },
       {
-        name: 'Time',
+        name: 'Slot',
         selector: 'time'
       },
       {
