@@ -21,9 +21,12 @@ export default class CustomerDashboard extends Component {
 
     this.state = {
       popupShow: false,
-      customer: '',
-      service: '',
-      provider: '',
+      customerName: '',
+      serviceName: '',
+      providerName: '',
+      customerId: '',
+      serviceId: '',
+      providerId: '',
       date: '',
       slot: '',
       stepperError: '',
@@ -77,8 +80,8 @@ export default class CustomerDashboard extends Component {
       const customer = JSON.parse(localStorage.getItem("customer"));
 
       this.setState({
-        customer: customer.id
-      });
+        customerId: customer.id
+      })
       const { data } = await axios.post("/api/getcustomersessions", { customerId: customer.id });
       if (data.error === undefined) {
         this.setState({
@@ -98,11 +101,14 @@ export default class CustomerDashboard extends Component {
 
   handleChangeService = async (e) => {
     try {
-      const service = e.target.value;
-      const { data } = await axios.post("/api/getserviceproviders", { serviceId: service });
+      const serviceId = e.target.value;
+      const index = e.nativeEvent.target.selectedIndex;
+      const serviceName = e.nativeEvent.target[index].text;
+      const { data } = await axios.post("/api/getserviceproviders", { serviceId: serviceId });
       if (data.error === undefined) {
         this.setState({
-          service: service,
+          serviceId: serviceId,
+          serviceName: serviceName,
           providers: data
         });
       } else {
@@ -122,11 +128,15 @@ export default class CustomerDashboard extends Component {
 
   handleChangeProvider = async (e) => {
     try {
-      const provider = e.target.value;
-      const { data } = await axios.post("/api/getproviderdates", { providerId: provider });
+      const providerId = e.target.value;
+      const index = e.nativeEvent.target.selectedIndex;
+      const providerName = e.nativeEvent.target[index].text;
+    
+      const { data } = await axios.post("/api/getproviderdates", { providerId: providerId });
       if (data.error === undefined) {
         this.setState({
-          provider: provider,
+          providerId: providerId,
+          providerName: providerName,
           dates: data
         });
       } else {
@@ -148,7 +158,7 @@ export default class CustomerDashboard extends Component {
     try {
       const date = e.target.value;
       const { data } = await axios.post("/api/getproviderslots",
-        { providerId: this.state.provider, date: date });
+        { providerId: this.state.providerId, date: date });
       if (data.error === undefined) {
         this.setState({
           date: date,
@@ -194,8 +204,10 @@ export default class CustomerDashboard extends Component {
   popupClose() {
     this.setState({
       popupShow: false,
-      service: '',
-      provider: '',
+      serviceName: '',
+      serviceId : '',
+      providerName: '',
+      provideId: '',
       date: '',
       slot: ''
     });
@@ -208,9 +220,9 @@ export default class CustomerDashboard extends Component {
       const customer = JSON.parse(localStorage.getItem("customer"));
       const { data } = await axios.post("/api/savesession",
       {
-       customerId: this.state.customer ,
-       providerId: this.state.provider ,
-       serviceId: this.state.service ,
+       customerId: this.state.customerId ,
+       providerId: this.state.providerId ,
+       serviceId: this.state.serviceId ,
        date: this.state.date ,
        slot: this.state.slot 
       });
@@ -236,15 +248,15 @@ export default class CustomerDashboard extends Component {
 
   render() {
     let session_data = {
-      'service': this.state.service,
-      'provider': this.state.provider,
+      'service': this.state.serviceName,
+      'provider': this.state.providerName,
       'date': this.state.date,
       'slot': this.state.slot,
     }
 
     const steps = [
-      { name: 'StepOne', component: <StepOne service={this.state.service} services={this.state.services} handleChangeService={this.handleChangeService} /> },
-      { name: 'StepTwo', component: <StepTwo provider={this.state.provider} providers={this.state.providers} handleChangeProvider={this.handleChangeProvider} /> },
+      { name: 'StepOne', component: <StepOne service={this.state.serviceName} services={this.state.services} handleChangeService={this.handleChangeService} /> },
+      { name: 'StepTwo', component: <StepTwo provider={this.state.providerName} providers={this.state.providers} handleChangeProvider={this.handleChangeProvider} /> },
       { name: 'StepThree', component: <StepThree date={this.state.date} dates={this.state.dates} handleChangeDate={this.handleChangeDate} /> },
       { name: 'StepFour', component: <StepFour slot={this.state.slot} slots={this.state.slots} handleChangeSlot={this.handleChangeSlot} /> }
     ];
@@ -325,12 +337,12 @@ export default class CustomerDashboard extends Component {
                   <MultiStep steps={steps} />
                 </div>
                 <div className="stepper-btn">
-                  {((this.state.service !== '') && (this.state.provider !== '') && (this.state.date !== '') && (this.state.slot !== '')) ? <button className="btn-common" onClick={this.sessionSave}>Save</button> : ''}
+                  {((this.state.serviceName !== '') && (this.state.providerName !== '') && (this.state.date !== '') && (this.state.slot !== '')) ? <button className="btn-common" onClick={this.sessionSave}>Save</button> : ''}
                 </div>
                 
                   <div className="stepper-data">
-                    {(this.state.service !== '') ? <span>Service: {session_data.service}</span> : <span></span>}
-                    {(this.state.provider !== '') ? <span>Provider: {session_data.provider}</span> : <span></span>}
+                    {(this.state.serviceName !== '') ? <span>Service: {session_data.service}</span> : <span></span>}
+                    {(this.state.providerName !== '') ? <span>Provider: {session_data.provider}</span> : <span></span>}
                     {(this.state.date !== '') ? <span>Date: {session_data.date}</span> : <span></span>}
                     {(this.state.slot !== '') ? <span>Slot: {session_data.slot}</span> : <span></span>}
                   </div>
