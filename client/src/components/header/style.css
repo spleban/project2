@@ -30,7 +30,9 @@
   display: inline-block;
   padding: 0 10px;
 }
-
+.menu-blk ul li a.true{
+  color: #16bdf9;
+}
 
 
 /*----------------------- Media queries --------------------------*/
