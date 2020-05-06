@@ -10,6 +10,9 @@ import CustomerJoin from './containers/customer-join/index.js';
 import ProviderJoin from './containers/provider-join/index.js';
 import ProviderDashboard from './containers/provider-dashboard/index.js';
 import CustomerDashboard from './containers/customer-dashboard/index.js';
+import AboutPage from './containers/about/index.js';
+import ContactPage from './containers/contact/index.js';
+import InstructionsPage from './containers/instructions/index.js';
 
 function App() {
   return (
@@ -21,6 +24,9 @@ function App() {
         <Route exact path="/provider_join" component={ProviderJoin} />
         <Route exact path="/provider_dashboard" component={ProviderDashboard} />
         <Route exact path="/customer_dashboard" component={CustomerDashboard} />
+        <Route exact path="/about" component={AboutPage} />
+        <Route exact path="/contact" component={ContactPage} />
+        <Route exact path="/instructions" component={InstructionsPage} />
         <Route exact path="/" component={HomePage} />
         <Redirect to="/" /> 
       </Switch>

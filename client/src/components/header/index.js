@@ -7,7 +7,7 @@ export default class Header extends Component {
   constructor(props) {    
     super(props)
     this.state = {
-      isToggleOn: false
+      path_name: window.location.pathname
     }
     
   }
@@ -29,9 +29,10 @@ export default class Header extends Component {
                 </div>
                 <div className="menu-blk">
                   <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/">About</Link></li>
-                    <li><Link to="/">Contact</Link></li>
+                    <li><Link className={`${this.state.path_name == "/"}` } to="/">Home</Link></li>
+                    <li><Link className={`${this.state.path_name == "/about"}` } to="/about">About</Link></li>
+                    <li><Link className={`${this.state.path_name == "/instructions"}` } to="/instructions">Instructions</Link></li>
+                    <li><Link className={`${this.state.path_name == "/contact"}` } to="/contact">Contact</Link></li>
                   </ul>
                 </div>
               </div>
