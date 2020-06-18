@@ -104,6 +104,7 @@ export default class CustomerDashboard extends Component {
       const serviceId = e.target.value;
       const index = e.nativeEvent.target.selectedIndex;
       const serviceName = e.nativeEvent.target[index].text;
+     
       const { data } = await axios.post("/api/getserviceproviders", { serviceId: serviceId });
       if (data.error === undefined) {
         this.setState({
@@ -124,6 +125,7 @@ export default class CustomerDashboard extends Component {
         popupShow: true
       });
     }
+    
   };
 
   handleChangeProvider = async (e) => {
@@ -131,7 +133,6 @@ export default class CustomerDashboard extends Component {
       const providerId = e.target.value;
       const index = e.nativeEvent.target.selectedIndex;
       const providerName = e.nativeEvent.target[index].text;
-    
       const { data } = await axios.post("/api/getproviderdates", { providerId: providerId });
       if (data.error === undefined) {
         this.setState({
@@ -156,6 +157,7 @@ export default class CustomerDashboard extends Component {
 
   handleChangeDate = async (e) => {
     try {
+      
       const date = e.target.value;
       const { data } = await axios.post("/api/getproviderslots",
         { providerId: this.state.providerId, date: date });
@@ -205,7 +207,7 @@ export default class CustomerDashboard extends Component {
     this.setState({
       popupShow: false,
       serviceName: '',
-      serviceId : '',
+      serviceId: '',
       providerName: '',
       provideId: '',
       date: '',
@@ -216,16 +218,17 @@ export default class CustomerDashboard extends Component {
 
   sessionSave = async (e) => {
     e.preventDefault();
-    try{
+    try {
       const customer = JSON.parse(localStorage.getItem("customer"));
+      
       const { data } = await axios.post("/api/savesession",
-      {
-       customerId: this.state.customerId ,
-       providerId: this.state.providerId ,
-       serviceId: this.state.serviceId ,
-       date: this.state.date ,
-       slot: this.state.slot 
-      });
+        {
+          customerId: this.state.customerId,
+          providerId: this.state.providerId,
+          serviceId: this.state.serviceId,
+          date: this.state.date,
+          slot: this.state.slot
+        });
     } catch (err) {
       console.log(err);
     }
@@ -236,7 +239,6 @@ export default class CustomerDashboard extends Component {
 
   handleDeleteClick = async data => {
     try {
-      console.log(`sessionId ${data.id}`);
       const res = await axios.delete('/api/deletesession', { data: { sessionId: data.id } });
       console.log(res);
     } catch (err) {
@@ -339,14 +341,14 @@ export default class CustomerDashboard extends Component {
                 <div className="stepper-btn">
                   {((this.state.serviceName !== '') && (this.state.providerName !== '') && (this.state.date !== '') && (this.state.slot !== '')) ? <button className="btn-common" onClick={this.sessionSave}>Save</button> : ''}
                 </div>
-                
-                  <div className="stepper-data">
-                    {(this.state.serviceName !== '') ? <span>Service: {session_data.service}</span> : <span></span>}
-                    {(this.state.providerName !== '') ? <span>Provider: {session_data.provider}</span> : <span></span>}
-                    {(this.state.date !== '') ? <span>Date: {session_data.date}</span> : <span></span>}
-                    {(this.state.slot !== '') ? <span>Slot: {session_data.slot}</span> : <span></span>}
-                  </div>
-                 
+
+                <div className="stepper-data">
+                  {(this.state.serviceName !== '') ? <span>Service: {session_data.service}</span> : <span></span>}
+                  {(this.state.providerName !== '') ? <span>Provider: {session_data.provider}</span> : <span></span>}
+                  {(this.state.date !== '') ? <span>Date: {session_data.date}</span> : <span></span>}
+                  {(this.state.slot !== '') ? <span>Slot: {session_data.slot}</span> : <span></span>}
+                </div>
+
               </div>
               <button className="close-btn" onClick={this.popupClose}>X</button>
             </div>
