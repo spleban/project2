@@ -276,11 +276,12 @@ module.exports = {
   },
 
   saveSession: async (req, res) => {
+    
     try {
       const {
         customerId, providerId, serviceId, date, slot,
       } = req.body;
-      const session = await db.query(queries.insertSession,
+       const session = await db.query(queries.insertSession,
         [customerId, providerId, serviceId, date, slot]);
       res.json(session);
     } catch (err) {
