@@ -42,7 +42,7 @@ export default class CustomerJoin extends Component {
        const { data } = await axios.post("/api/savecustomer", this.state.fields)
        if (data.error === undefined)
        {
-            localStorage.setItem("customer",data[0]);
+            localStorage.setItem("customer",JSON.stringify(data[0]));
             this.props.history.push('/customer_dashboard');
         } else {
             alert(data.error);
