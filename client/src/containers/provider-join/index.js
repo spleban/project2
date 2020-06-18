@@ -51,7 +51,7 @@ export default class ProviderJoin extends Component {
         console.log(data.error);
         if (data.error === undefined)
         {
-             localStorage.setItem("provider",data[0]);
+             localStorage.setItem("provider",JSON.stringify(data[0]));
              this.props.history.push('/provider_dashboard');
          } else {
              alert(data.error);
